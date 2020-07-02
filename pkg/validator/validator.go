@@ -1,1 +1,5 @@
-package validator_
+package validator
+
+func ValidateHost() {
+
+}

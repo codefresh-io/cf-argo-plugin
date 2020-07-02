@@ -32,7 +32,7 @@ type builder struct {
 }
 
 func New() Builder {
-	return &builder{lines: []string{}}
+	return &builder{lines: []string{"#!/bin/bash -e"}}
 }
 
 func (b *builder) Auth(host string, username string, password string) error {
@@ -71,7 +71,7 @@ func (b *builder) GetLines() []string {
 }
 
 func (b *builder) ExportExternalUrl(host string, name string) {
-	applicationUrl := fmt.Sprintf("%s/%s", host, name)
+	applicationUrl := fmt.Sprintf("%s/applications/%s", host, name)
 	b.lines = append(b.lines, fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", applicationUrl))
 }
 

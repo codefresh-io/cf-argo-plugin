@@ -51,7 +51,11 @@ func init() {
 }
 
 func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
-	if pluginAuthContext.CodefreshToken != "" && pluginAuthContext.CodefreshIntegration != "" {
+	if pluginAuthContext.ArgoUsername != "" && pluginAuthContext.ArgoPassword != "" && pluginAuthContext.ArgoHost != "" {
+		context.PluginArgoCredentials.Host = pluginAuthContext.ArgoHost
+		context.PluginArgoCredentials.Username = pluginAuthContext.ArgoUsername
+		context.PluginArgoCredentials.Password = pluginAuthContext.ArgoPassword
+	} else if pluginAuthContext.CodefreshToken != "" && pluginAuthContext.CodefreshIntegration != "" {
 		codefreshApi := codefresh.New(&codefresh.ClientOptions{
 			Token: pluginAuthContext.CodefreshToken,
 			Host:  pluginAuthContext.CodefreshHost,
@@ -64,13 +68,8 @@ func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
 		context.PluginArgoCredentials.Host = integration.Data.Url
 		context.PluginArgoCredentials.Username = integration.Data.Username
 		context.PluginArgoCredentials.Password = integration.Data.Password
-
-	} else if pluginAuthContext.ArgoUsername != "" && pluginAuthContext.ArgoPassword != "" && pluginAuthContext.CodefreshHost != "" {
-		context.PluginArgoCredentials.Host = pluginAuthContext.ArgoHost
-		context.PluginArgoCredentials.Username = pluginAuthContext.ArgoUsername
-		context.PluginArgoCredentials.Password = pluginAuthContext.ArgoPassword
 	} else {
-		return fmt.Errorf("can`t resolve argo context, you should provide correct codefresh or argo context")
+		return fmt.Errorf("can`t resolve argo context, you should provide correct codefresh or raw argo context")
 	}
 
 	return nil
