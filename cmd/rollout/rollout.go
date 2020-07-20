@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 )
 
@@ -25,7 +26,40 @@ var Cmd = &cobra.Command{
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
 		b.Rollout(rolloutArgs, name)
 
-		fmt.Println(strings.Join(b.GetLines()[:], "\n"))
+		resultCommands := strings.Join(b.GetLines()[:], "\n")
+		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
+
+		if context.PluginOutConfig.CommandsFile != "" {
+			file, err := os.Create(context.PluginOutConfig.CommandsFile)
+			if err != nil {
+				return err
+			}
+
+			defer file.Close()
+
+			_, err = file.WriteString(resultCommands)
+
+			if err != nil {
+				return err
+			}
+		} else {
+			fmt.Println(resultCommands)
+		}
+
+		if context.PluginOutConfig.ExportOutUrlCommand != "" {
+			file, err := os.Create(context.PluginOutConfig.ExportOutUrlCommand)
+			if err != nil {
+				return err
+			}
+
+			defer file.Close()
+
+			_, err = file.WriteString(resultExportCommands)
+
+			if err != nil {
+				return err
+			}
+		}
 
 		return nil
 	},
@@ -42,7 +76,7 @@ func init() {
 	f := Cmd.Flags()
 	f.StringVar(&rolloutArgs.KubernetesContext, "k8s-context", "", "The k8s context name as it show in the k8s integration.")
 	f.StringVar(&rolloutArgs.RolloutName, "rollout-name", "", "The name of the rollout to be promoted.")
-	f.StringVar(&rolloutArgs.RolloutNamespace, "rollout-namespace", "rolloutapp", "The namespace of the rollout to be promoted.")
+	f.StringVar(&rolloutArgs.RolloutNamespace, "rollout-namespace", "default", "The namespace of the rollout to be promoted.")
 	f.BoolVar(&rolloutArgs.WaitHealthy, "wait-healthy", true, "Specify whether to wait for sync to be completed (in canary consider wait for suspended status)")
 
 	_ = cobra.MarkFlagRequired(f, "k8s-context")

@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 )
-
 
 var syncArgs = &builder.SyncArgs{}
 
@@ -26,7 +26,40 @@ var Cmd = &cobra.Command{
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
 		b.Sync(syncArgs, name)
 
-		fmt.Println(strings.Join(b.GetLines()[:], "\n"))
+		resultCommands := strings.Join(b.GetLines()[:], "\n")
+		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
+
+		if context.PluginOutConfig.CommandsFile != "" {
+			file, err := os.Create(context.PluginOutConfig.CommandsFile)
+			if err != nil {
+				return err
+			}
+
+			defer file.Close()
+
+			_, err = file.WriteString(resultCommands)
+
+			if err != nil {
+				return err
+			}
+		} else {
+			fmt.Println(resultCommands)
+		}
+
+		if context.PluginOutConfig.ExportOutUrlCommand != "" {
+			file, err := os.Create(context.PluginOutConfig.ExportOutUrlCommand)
+			if err != nil {
+				return err
+			}
+
+			defer file.Close()
+
+			_, err = file.WriteString(resultExportCommands)
+
+			if err != nil {
+				return err
+			}
+		}
 
 		return nil
 	},

@@ -25,14 +25,16 @@ type Builder interface {
 	Rollout(args *RolloutArgs, name string)
 
 	GetLines() []string
+	GetExportLines() []string
 }
 
 type builder struct {
-	lines []string
+	lines       []string
+	exportLines []string
 }
 
 func New() Builder {
-	return &builder{lines: []string{"#!/bin/bash -e"}}
+	return &builder{lines: []string{"#!/bin/bash -e"}, exportLines: []string{"#!/bin/bash -e"}}
 }
 
 func (b *builder) Auth(host string, username string, password string) error {
@@ -70,9 +72,15 @@ func (b *builder) GetLines() []string {
 	return b.lines
 }
 
+func (b *builder) GetExportLines() []string {
+	return b.exportLines
+}
+
 func (b *builder) ExportExternalUrl(host string, name string) {
 	applicationUrl := fmt.Sprintf("%s/applications/%s", host, name)
-	b.lines = append(b.lines, fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", applicationUrl))
+	command := fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", applicationUrl)
+	b.lines = append(b.lines, command)
+	b.exportLines = append(b.exportLines, command)
 }
 
 func getHostDomain(host string) (*string, error) {

@@ -46,6 +46,9 @@ func init() {
 	pf.StringVar(&pluginAuthContext.ArgoPassword, "argo-password", "", "Password for argo cd, use only if you not provide integration")
 	pf.StringVar(&pluginAuthContext.ArgoHost, "argo-host", "", "Host for argo cd, use only if you not provide integration")
 
+	pf.StringVar(&context.PluginOutConfig.CommandsFile, "out-commands-file", "", "Write main commands to file")
+	pf.StringVar(&context.PluginOutConfig.ExportOutUrlCommand, "out-export-file", "", "Write export commands to file")
+
 	rootCmd.AddCommand(sync.Cmd)
 	rootCmd.AddCommand(rollout.Cmd)
 }
