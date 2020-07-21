@@ -21,3 +21,4 @@ RUN curl -sSL https://github.com/argoproj/argo-cd/releases/download/v1.5.5/argoc
 RUN chmod +x /usr/local/bin/argocd
 
 COPY --from=build /app/cf-argo-plugin /usr/local/bin/cf-argo-plugin
+ENTRYPOINT /bin/bash
