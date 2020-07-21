@@ -25,7 +25,7 @@ var Cmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Build id: %s", result.BuildId)
+		fmt.Printf("Build id: %s\n", result.BuildId)
 
 		return nil
 	},
