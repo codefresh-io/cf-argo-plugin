@@ -9,6 +9,7 @@ import (
 
 type Codefresh interface {
 	GetIntegration(name string) (*ArgoIntegration, error)
+	StartSyncTask(name string) error
 	requestAPI(*requestOptions, interface{}) error
 }
 
@@ -68,6 +69,20 @@ func (c *codefresh) GetIntegration(name string) (*ArgoIntegration, error) {
 	}
 
 	return r, nil
+}
+
+func (c *codefresh) StartSyncTask(name string) error {
+	r := &ArgoIntegration{}
+	err := c.requestAPI(&requestOptions{
+		path:   fmt.Sprintf("/api/environments-v2/sync/%s", name),
+		method: "GET",
+	}, r)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *codefresh) requestAPI(opt *requestOptions, target interface{}) error {
