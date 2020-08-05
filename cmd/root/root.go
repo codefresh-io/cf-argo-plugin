@@ -1,6 +1,7 @@
 package root
 
 import (
+	"cf-argo-plugin/cmd/processResult"
 	"cf-argo-plugin/cmd/rollout"
 	"cf-argo-plugin/cmd/runTask"
 	"cf-argo-plugin/cmd/sync"
@@ -53,6 +54,8 @@ func init() {
 	rootCmd.AddCommand(sync.Cmd)
 	rootCmd.AddCommand(rollout.Cmd)
 	rootCmd.AddCommand(runTask.Cmd)
+	rootCmd.AddCommand(processResult.Cmd)
+
 }
 
 func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
