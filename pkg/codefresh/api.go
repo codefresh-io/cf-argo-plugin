@@ -10,6 +10,7 @@ import (
 type Codefresh interface {
 	GetIntegration(name string) (*ArgoIntegration, error)
 	StartSyncTask(name string) (*TaskResult, error)
+	SendMetadata(metadata *ArgoApplicationMetadata) error
 	requestAPI(*requestOptions, interface{}) error
 }
 
@@ -31,6 +32,12 @@ type ArgoIntegration struct {
 	Data ArgoIntegrationData `json:"data"`
 }
 
+type ArgoApplicationMetadata struct {
+	PipelineId      string `json:"pipelineId"`
+	Revision        string `json:"revision"`
+	ApplicationName string `json:"name"`
+}
+
 type TaskResult struct {
 	BuildId string `json:"id"`
 }
@@ -45,6 +52,7 @@ type ArgoIntegrationData struct {
 type requestOptions struct {
 	path   string
 	method string
+	body   []byte
 }
 
 type codefresh struct {
@@ -75,6 +83,23 @@ func (c *codefresh) GetIntegration(name string) (*ArgoIntegration, error) {
 	return r, nil
 }
 
+func (c *codefresh) SendMetadata(metadata *ArgoApplicationMetadata) error {
+	metadataBytes := new(bytes.Buffer)
+	json.NewEncoder(metadataBytes).Encode(metadata)
+
+	err := c.requestAPI(&requestOptions{
+		path:   fmt.Sprintf("/api/environments-v2/argo/metadata"),
+		method: "POST",
+		body:   metadataBytes.Bytes(),
+	}, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *codefresh) StartSyncTask(name string) (*TaskResult, error) {
 	r := &TaskResult{}
 	err := c.requestAPI(&requestOptions{
@@ -90,10 +115,9 @@ func (c *codefresh) StartSyncTask(name string) (*TaskResult, error) {
 }
 
 func (c *codefresh) requestAPI(opt *requestOptions, target interface{}) error {
-	var body []byte
 	finalURL := fmt.Sprintf("%s%s", c.host, opt.path)
 
-	request, err := http.NewRequest(opt.method, finalURL, bytes.NewBuffer(body))
+	request, err := http.NewRequest(opt.method, finalURL, bytes.NewBuffer(opt.body))
 
 	if err != nil {
 		return err
