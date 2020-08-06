@@ -30,13 +30,13 @@ var Cmd = &cobra.Command{
 			Host:  context.PluginCodefreshCredentials.Host,
 		})
 
-		_ = cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
+		err := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
 			PipelineId:      processResultArgsOptions.PipelineId,
 			Revision:        revision,
 			ApplicationName: name,
 		})
 
-		return nil
+		return err
 	},
 }
 
