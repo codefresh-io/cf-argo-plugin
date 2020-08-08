@@ -23,7 +23,7 @@ var Cmd = &cobra.Command{
 			Password: context.PluginArgoCredentials.Password,
 		}
 
-		revision, _ := argoApi.GetLatestHistoryRevision(name)
+		historyId, _ := argoApi.GetLatestHistoryId(name)
 
 		cf := codefresh.New(&codefresh.ClientOptions{
 			Token: context.PluginCodefreshCredentials.Token,
@@ -31,8 +31,8 @@ var Cmd = &cobra.Command{
 		})
 
 		err := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
-			PipelineId:      processResultArgsOptions.PipelineId,
-			Revision:        revision,
+			Pipeline:        processResultArgsOptions.PipelineId,
+			HistoryId:       historyId,
 			ApplicationName: name,
 		})
 

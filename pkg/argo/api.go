@@ -29,12 +29,12 @@ type requestOptions struct {
 type History struct {
 	Status struct {
 		History []struct {
-			Revision string `json:"revision"`
+			Id int64 `json:"id"`
 		} `json:"history"`
 	} `json:"status"`
 }
 
-func (c *Argo) GetLatestHistoryRevision(application string) (string, error) {
+func (c *Argo) GetLatestHistoryId(application string) (int64, error) {
 
 	options := &requestOptions{
 		path:   "/api/v1/applications/" + application,
@@ -45,7 +45,7 @@ func (c *Argo) GetLatestHistoryRevision(application string) (string, error) {
 	_ = c.requestAPI(options, result)
 
 	historyList := result.Status.History
-	return historyList[len(historyList)-1].Revision, nil
+	return historyList[len(historyList)-1].Id, nil
 }
 
 func (c *Argo) getToken() string {

@@ -33,8 +33,8 @@ type ArgoIntegration struct {
 }
 
 type ArgoApplicationMetadata struct {
-	PipelineId      string `json:"pipelineId"`
-	Revision        string `json:"revision"`
+	Pipeline        string `json:"pipeline"`
+	HistoryId       int64  `json:"historyId"`
 	ApplicationName string `json:"name"`
 }
 
@@ -87,11 +87,13 @@ func (c *codefresh) SendMetadata(metadata *ArgoApplicationMetadata) error {
 	metadataBytes := new(bytes.Buffer)
 	json.NewEncoder(metadataBytes).Encode(metadata)
 
+	var result map[string]interface{}
+
 	err := c.requestAPI(&requestOptions{
 		path:   fmt.Sprintf("/api/environments-v2/argo/metadata"),
 		method: "POST",
 		body:   metadataBytes.Bytes(),
-	}, nil)
+	}, &result)
 
 	if err != nil {
 		return err
