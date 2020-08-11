@@ -30,13 +30,14 @@ var Cmd = &cobra.Command{
 			Host:  context.PluginCodefreshCredentials.Host,
 		})
 
-		err := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
+		// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
+		cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
 			Pipeline:        processResultArgsOptions.PipelineId,
 			HistoryId:       historyId,
 			ApplicationName: name,
 		})
 
-		return err
+		return nil
 	},
 }
 
