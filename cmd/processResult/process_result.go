@@ -44,4 +44,5 @@ var Cmd = &cobra.Command{
 func init() {
 	f := Cmd.Flags()
 	f.StringVar(&processResultArgsOptions.PipelineId, "pipeline-id", "", "Pipeline id where argo sync was executed")
+	f.StringVar(&processResultArgsOptions.CodefreshBuildId, "build-id", "", "Build id where argo sync was executed")
 }
