@@ -9,6 +9,7 @@ import (
 
 var processResultArgsOptions struct {
 	PipelineId string
+	BuildId    string
 }
 
 var Cmd = &cobra.Command{
@@ -33,6 +34,7 @@ var Cmd = &cobra.Command{
 		// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
 		cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
 			Pipeline:        processResultArgsOptions.PipelineId,
+			BuildId:         processResultArgsOptions.BuildId,
 			HistoryId:       historyId,
 			ApplicationName: name,
 		})
@@ -44,4 +46,5 @@ var Cmd = &cobra.Command{
 func init() {
 	f := Cmd.Flags()
 	f.StringVar(&processResultArgsOptions.PipelineId, "pipeline-id", "", "Pipeline id where argo sync was executed")
+	f.StringVar(&processResultArgsOptions.BuildId, "build-id", "", "Pipeline id where argo sync was executed")
 }

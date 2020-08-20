@@ -34,6 +34,7 @@ type ArgoIntegration struct {
 
 type ArgoApplicationMetadata struct {
 	Pipeline        string `json:"pipeline"`
+	BuildId         string `json:"buildId"`
 	HistoryId       int64  `json:"historyId"`
 	ApplicationName string `json:"name"`
 }
