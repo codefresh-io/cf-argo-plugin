@@ -22,6 +22,7 @@ var Cmd = &cobra.Command{
 			Host:     context.PluginArgoCredentials.Host,
 			Username: context.PluginArgoCredentials.Username,
 			Password: context.PluginArgoCredentials.Password,
+			Token:    context.PluginArgoCredentials.Token,
 		}
 
 		historyId, _ := argoApi.GetLatestHistoryId(name)

@@ -19,6 +19,7 @@ type Argo struct {
 	Host     string
 	Username string
 	Password string
+	Token    string
 }
 
 type requestOptions struct {
@@ -80,7 +81,11 @@ func (c *Argo) getToken() string {
 }
 
 func (c *Argo) requestAPI(opt *requestOptions, target interface{}) error {
-	token := c.getToken()
+
+	token := c.Token
+	if token == "" {
+		token = c.getToken()
+	}
 
 	client := buildHttpClient()
 
