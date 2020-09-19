@@ -27,7 +27,7 @@ var Cmd = &cobra.Command{
 		}
 
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
-		b.Sync(syncArgs, name, context.PluginArgoCredentials.Token)
+		b.Sync(syncArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host)
 
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")

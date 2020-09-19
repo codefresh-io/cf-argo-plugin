@@ -21,7 +21,7 @@ type RolloutArgs struct {
 
 type Builder interface {
 	Auth(host string, username string, password string) error
-	Sync(args *SyncArgs, name string, authToken string)
+	Sync(args *SyncArgs, name string, authToken string, host string)
 	ExportExternalUrl(host string, name string)
 	Rollout(args *RolloutArgs, name string)
 
@@ -48,22 +48,22 @@ func (b *builder) Auth(host string, username string, password string) error {
 	return nil
 }
 
-func wrapArgoCommandWithToken(command string, authToken string) string {
+func wrapArgoCommandWithToken(command string, authToken string, host string) string {
 	if authToken != "" {
-		return fmt.Sprintf(command+"  --auth-token %s", authToken)
+		return fmt.Sprintf(command+"  --auth-token %s --server %s --insecure", authToken, host)
 	}
 	return command
 }
 
-func (b *builder) Sync(args *SyncArgs, name string, authToken string) {
+func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
 	if args.Sync {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app sync %s", name), authToken))
+		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app sync %s", name), authToken, host))
 	}
 	if args.WaitHealthy {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s", name), authToken))
+		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s", name), authToken, host))
 	}
 	if args.WaitForSuspend {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s --suspended", name), authToken))
+		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s --suspended", name), authToken, host))
 	}
 }
 
