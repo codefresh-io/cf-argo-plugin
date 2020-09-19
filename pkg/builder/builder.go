@@ -52,7 +52,7 @@ func wrapArgoCommandWithToken(command string, authToken string) string {
 	if authToken != "" {
 		return fmt.Sprintf(command+"  --auth-token %s", authToken)
 	}
-	return authToken
+	return command
 }
 
 func (b *builder) Sync(args *SyncArgs, name string, authToken string) {

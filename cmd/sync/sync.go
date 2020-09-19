@@ -32,9 +32,9 @@ var Cmd = &cobra.Command{
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
 
-		//if syncArgs.Debug {
-		fmt.Println("Command to execute: " + resultCommands)
-		//}
+		if syncArgs.Debug {
+			fmt.Println("Command to execute: " + resultCommands)
+		}
 
 		if context.PluginOutConfig.CommandsFile != "" {
 			file, err := os.Create(context.PluginOutConfig.CommandsFile)
