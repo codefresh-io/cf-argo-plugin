@@ -56,14 +56,15 @@ func wrapArgoCommandWithToken(command string, authToken string, host string) str
 }
 
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
+	hostDomain, _ := getHostDomain(host)
 	if args.Sync {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app sync %s", name), authToken, host))
+		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app sync %s", name), authToken, *hostDomain))
 	}
 	if args.WaitHealthy {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s", name), authToken, host))
+		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s", name), authToken, *hostDomain))
 	}
 	if args.WaitForSuspend {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s --suspended", name), authToken, host))
+		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s --suspended", name), authToken, *hostDomain))
 	}
 }
 
