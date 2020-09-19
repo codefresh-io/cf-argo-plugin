@@ -45,6 +45,10 @@ func (c *Argo) GetLatestHistoryId(application string) (int64, error) {
 	_ = c.requestAPI(options, result)
 
 	historyList := result.Status.History
+	if len(historyList) == 0 {
+		return -1, nil
+	}
+
 	return historyList[len(historyList)-1].Id, nil
 }
 
