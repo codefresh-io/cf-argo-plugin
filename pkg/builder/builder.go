@@ -9,6 +9,7 @@ type SyncArgs struct {
 	Sync           bool
 	WaitHealthy    bool
 	WaitForSuspend bool
+	Debug          bool
 }
 
 type RolloutArgs struct {

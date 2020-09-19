@@ -32,6 +32,10 @@ var Cmd = &cobra.Command{
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
 
+		if syncArgs.Debug {
+			fmt.Println("Command to execute: " + resultCommands)
+		}
+
 		if context.PluginOutConfig.CommandsFile != "" {
 			file, err := os.Create(context.PluginOutConfig.CommandsFile)
 			if err != nil {
@@ -80,4 +84,6 @@ func init() {
 	f.BoolVar(&syncArgs.Sync, "sync", true, "Specify whether to trigger an ArgoCD sync")
 	f.BoolVar(&syncArgs.WaitHealthy, "wait-healthy", false, "Specify whether to wait for sync to be completed (in canary consider wait for suspended status)")
 	f.BoolVar(&syncArgs.WaitForSuspend, "wait-suspend", false, "Specify whether to wait for application suspended status")
+	f.BoolVar(&syncArgs.Debug, "debug", false, "Debug argocd command")
+
 }
