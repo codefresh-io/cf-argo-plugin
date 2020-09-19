@@ -19,12 +19,15 @@ var Cmd = &cobra.Command{
 		name := args[0]
 
 		b := builder.New()
-		err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password)
-		if err != nil {
-			return err
+		if context.PluginArgoCredentials.Token == "" {
+			err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password)
+			if err != nil {
+				return err
+			}
 		}
+
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
-		b.Sync(syncArgs, name)
+		b.Sync(syncArgs, name, context.PluginArgoCredentials.Token)
 
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")

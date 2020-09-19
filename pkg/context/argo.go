@@ -4,6 +4,7 @@ type ArgoCredentials struct {
 	Username string
 	Password string
 	Host     string
+	Token    string
 }
 
 type OutConfig struct {

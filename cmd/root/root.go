@@ -20,6 +20,7 @@ type authContext struct {
 	ArgoUsername string
 	ArgoPassword string
 	ArgoHost     string
+	ArgoToken    string
 }
 
 var pluginAuthContext = &authContext{}
@@ -46,6 +47,7 @@ func init() {
 
 	pf.StringVar(&pluginAuthContext.ArgoUsername, "argo-username", "", "Username for argo cd, use only if you not provide integration")
 	pf.StringVar(&pluginAuthContext.ArgoPassword, "argo-password", "", "Password for argo cd, use only if you not provide integration")
+	pf.StringVar(&pluginAuthContext.ArgoToken, "argo-token", "", "Token for argo cd, use only if you not provide integration")
 	pf.StringVar(&pluginAuthContext.ArgoHost, "argo-host", "", "Host for argo cd, use only if you not provide integration")
 
 	pf.StringVar(&context.PluginOutConfig.CommandsFile, "out-commands-file", "", "Write main commands to file")
@@ -79,6 +81,7 @@ func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
 		context.PluginArgoCredentials.Host = integration.Data.Url
 		context.PluginArgoCredentials.Username = integration.Data.Username
 		context.PluginArgoCredentials.Password = integration.Data.Password
+		context.PluginArgoCredentials.Token = integration.Data.Token
 	} else {
 		return fmt.Errorf("can`t resolve argo context, you should provide correct codefresh or raw argo context")
 	}
