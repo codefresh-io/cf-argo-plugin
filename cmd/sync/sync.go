@@ -20,7 +20,7 @@ var Cmd = &cobra.Command{
 
 		b := builder.New()
 		if context.PluginArgoCredentials.Token == "" {
-			err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password)
+			err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password, syncArgs.AdditionalFlags)
 			if err != nil {
 				return err
 			}
@@ -84,6 +84,7 @@ func init() {
 	f.BoolVar(&syncArgs.Sync, "sync", true, "Specify whether to trigger an ArgoCD sync")
 	f.BoolVar(&syncArgs.WaitHealthy, "wait-healthy", false, "Specify whether to wait for sync to be completed (in canary consider wait for suspended status)")
 	f.BoolVar(&syncArgs.WaitForSuspend, "wait-suspend", false, "Specify whether to wait for application suspended status")
-	f.BoolVar(&syncArgs.Debug, "debug", false, "Debug argocd command")
+	f.BoolVar(&syncArgs.Debug, "debug", false, "Debug argocd command ( print commands to output )")
+	f.StringVar(&syncArgs.AdditionalFlags, "additional-flags", "", "Specify additional flags , like --grpc-web , so on")
 
 }
