@@ -62,20 +62,22 @@ func wrapArgoCommandWithToken(command string, authToken string, host string) str
 	return command
 }
 
+func buildCommandWithAllThings(basicCommand string, args *SyncArgs, authToken string, host string) string {
+	commandWithToken := wrapArgoCommandWithToken(basicCommand, authToken, host)
+	return wrapArgoCommandWithAdditionalFlags(commandWithToken, args.AdditionalFlags)
+}
+
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
 	hostDomain, _ := getHostDomain(host)
-	var basicCommand string
 	if args.Sync {
-		basicCommand = fmt.Sprintf("argocd app sync %s", name)
+		b.lines = append(b.lines, buildCommandWithAllThings(fmt.Sprintf("argocd app sync %s", name), args, authToken, *hostDomain))
 	}
 	if args.WaitHealthy {
-		basicCommand = fmt.Sprintf("argocd app wait %s", name)
+		b.lines = append(b.lines, buildCommandWithAllThings(fmt.Sprintf("argocd app wait %s", name), args, authToken, *hostDomain))
 	}
 	if args.WaitForSuspend {
-		basicCommand = fmt.Sprintf("argocd app wait %s --suspended", name)
+		b.lines = append(b.lines, buildCommandWithAllThings(fmt.Sprintf("argocd app wait %s --suspended", name), args, authToken, *hostDomain))
 	}
-	commandWithToken := wrapArgoCommandWithToken(basicCommand, authToken, *hostDomain)
-	b.lines = append(b.lines, wrapArgoCommandWithAdditionalFlags(commandWithToken, args.AdditionalFlags))
 }
 
 func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host string) {
