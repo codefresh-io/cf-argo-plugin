@@ -64,7 +64,7 @@ func wrapArgoCommandWithToken(command string, authToken string, host string) str
 
 func buildCommandWithAllThings(basicCommand string, args *SyncArgs, authToken string, host string) string {
 	commandWithToken := wrapArgoCommandWithToken(basicCommand, authToken, host)
-	return wrapArgoCommandWithAdditionalFlags(commandWithToken, args.AdditionalFlags)
+	return commandWithToken
 }
 
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
