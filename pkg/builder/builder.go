@@ -11,6 +11,7 @@ type SyncArgs struct {
 	WaitForSuspend  bool
 	Debug           bool
 	AdditionalFlags string
+	Revision        string
 }
 
 type RolloutArgs struct {
@@ -70,7 +71,11 @@ func buildCommandWithAllThings(basicCommand string, args *SyncArgs, authToken st
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
 	hostDomain, _ := getHostDomain(host)
 	if args.Sync {
-		b.lines = append(b.lines, buildCommandWithAllThings(fmt.Sprintf("argocd app sync %s", name), args, authToken, *hostDomain))
+		command := buildCommandWithAllThings(fmt.Sprintf("argocd app sync %s", name), args, authToken, *hostDomain)
+		if args.Revision != "" {
+			command = fmt.Sprintf("%s --revision %s", command, args.Revision)
+		}
+		b.lines = append(b.lines, command)
 	}
 	if args.WaitHealthy {
 		b.lines = append(b.lines, buildCommandWithAllThings(fmt.Sprintf("argocd app wait %s", name), args, authToken, *hostDomain))
