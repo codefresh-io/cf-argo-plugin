@@ -71,7 +71,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		b.lines = append(b.lines, command)
 	}
 	if args.WaitHealthy {
-		cmd := buildCommandWithAllThings(fmt.Sprintf("argocd app wait %s", name), args, authToken, *hostDomain)
+		cmd := buildCommandWithAllThings(fmt.Sprintf("argocd app wait %s --timeout 60", name), args, authToken, *hostDomain)
 		b.lines = append(b.lines, fmt.Sprintf("{ cf_export waitSyncErrorMessage=$(%s 2>&1 >&3 3>&-); } 3>&1", cmd))
 	}
 	if args.WaitForSuspend {
