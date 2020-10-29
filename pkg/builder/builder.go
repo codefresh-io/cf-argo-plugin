@@ -6,12 +6,11 @@ import (
 )
 
 type SyncArgs struct {
-	Sync            bool
-	WaitHealthy     bool
-	WaitForSuspend  bool
-	Debug           bool
-	AdditionalFlags string
-	Revision        string
+	Sync           bool
+	WaitHealthy    bool
+	WaitForSuspend bool
+	Debug          bool
+	Revision       string
 }
 
 type RolloutArgs struct {
@@ -22,7 +21,7 @@ type RolloutArgs struct {
 }
 
 type Builder interface {
-	Auth(host string, username string, password string, additionalFlags string) error
+	Auth(host string, username string, password string) error
 	Sync(args *SyncArgs, name string, authToken string, host string)
 	ExportExternalUrl(host string, name string)
 	Rollout(args *RolloutArgs, name string, authToken string, host string)
@@ -40,20 +39,13 @@ func New() Builder {
 	return &builder{lines: []string{"#!/bin/bash -e"}, exportLines: []string{"#!/bin/bash -e"}}
 }
 
-func (b *builder) Auth(host string, username string, password string, additionalFlags string) error {
+func (b *builder) Auth(host string, username string, password string) error {
 	domain, err := getHostDomain(host)
 	if err != nil {
 		return err
 	}
-	b.lines = append(b.lines, wrapArgoCommandWithAdditionalFlags(fmt.Sprintf("argocd login \"%s\" --insecure --username \"%s\" --password \"%s\"", *domain, username, password), additionalFlags))
+	b.lines = append(b.lines, fmt.Sprintf("argocd login \"%s\" --insecure --username \"%s\" --password \"%s\"", *domain, username, password))
 	return nil
-}
-
-func wrapArgoCommandWithAdditionalFlags(command string, additionalFlags string) string {
-	if additionalFlags != "" {
-		return command + " " + additionalFlags
-	}
-	return command
 }
 
 func wrapArgoCommandWithToken(command string, authToken string, host string) string {
