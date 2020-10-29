@@ -6,11 +6,12 @@ import (
 )
 
 type SyncArgs struct {
-	Sync           bool
-	WaitHealthy    bool
-	WaitForSuspend bool
-	Debug          bool
-	Revision       string
+	Sync            bool
+	WaitHealthy     bool
+	WaitForSuspend  bool
+	Debug           bool
+	AdditionalFlags string
+	Revision        string
 }
 
 type RolloutArgs struct {
