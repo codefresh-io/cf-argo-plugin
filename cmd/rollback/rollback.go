@@ -26,13 +26,15 @@ var Cmd = &cobra.Command{
 		})
 
 		if rollbackOptions.Message != "" && rollbackOptions.NeedRollback {
+			log.Println(fmt.Sprintf("Start do rollback because message is \"%s\"", rollbackOptions.Message))
+
 			rollbackResult, err := cf.RollbackToStable(name, codefresh.Rollback{
 				ContextName:     context.PluginCodefreshCredentials.Integration,
 				ApplicationName: name,
 			})
 
 			if rollbackResult != nil {
-				log.Println(fmt.Sprintf("Run rollback process, build link https://g.codefresh.io/build/%s", rollbackResult.BuildId))
+				log.Println(fmt.Sprintf("Run rollback process pipeline, build link https://g.codefresh.io/build/%s", rollbackResult.BuildId))
 			}
 
 			return err
