@@ -38,6 +38,8 @@ var Cmd = &cobra.Command{
 			return err
 		}
 
+		log.Println("Skip rollback execution")
+
 		return nil
 	},
 }
