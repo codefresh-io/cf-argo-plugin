@@ -10,6 +10,8 @@ import (
 
 var rollbackOptions struct {
 	Message string
+	// if customer want do rollback on failed argocd sync
+	NeedRollback bool
 }
 
 var Cmd = &cobra.Command{
@@ -23,7 +25,7 @@ var Cmd = &cobra.Command{
 			Host:  context.PluginCodefreshCredentials.Host,
 		})
 
-		if rollbackOptions.Message != "" {
+		if rollbackOptions.Message != "" && rollbackOptions.NeedRollback {
 			rollbackResult, err := cf.RollbackToStable(name, codefresh.Rollback{
 				ContextName:     context.PluginCodefreshCredentials.Integration,
 				ApplicationName: name,
@@ -43,4 +45,5 @@ var Cmd = &cobra.Command{
 func init() {
 	f := Cmd.Flags()
 	f.StringVar(&rollbackOptions.Message, "message", "", "Error message from sync execution")
+	f.BoolVar(&rollbackOptions.NeedRollback, "needRollback", false, "Execute rollback if sync is failed")
 }
