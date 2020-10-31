@@ -2,6 +2,7 @@ package root
 
 import (
 	"cf-argo-plugin/cmd/processResult"
+	"cf-argo-plugin/cmd/rollback"
 	"cf-argo-plugin/cmd/rollout"
 	"cf-argo-plugin/cmd/runTask"
 	"cf-argo-plugin/cmd/sync"
@@ -57,6 +58,7 @@ func init() {
 	rootCmd.AddCommand(rollout.Cmd)
 	rootCmd.AddCommand(runTask.Cmd)
 	rootCmd.AddCommand(processResult.Cmd)
+	rootCmd.AddCommand(rollback.Cmd)
 
 }
 

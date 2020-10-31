@@ -11,6 +11,7 @@ type Codefresh interface {
 	GetIntegration(name string) (*ArgoIntegration, error)
 	StartSyncTask(name string) (*TaskResult, error)
 	SendMetadata(metadata *ArgoApplicationMetadata) error
+	RollbackToStable(name string) (*TaskResult, error)
 	requestAPI(*requestOptions, interface{}) error
 }
 
@@ -108,6 +109,20 @@ func (c *codefresh) StartSyncTask(name string) (*TaskResult, error) {
 	r := &TaskResult{}
 	err := c.requestAPI(&requestOptions{
 		path:   fmt.Sprintf("/api/environments-v2/sync/%s", name),
+		method: "GET",
+	}, r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func (c *codefresh) RollbackToStable(name string) (*TaskResult, error) {
+	r := &TaskResult{}
+	err := c.requestAPI(&requestOptions{
+		path:   fmt.Sprintf("/gitops/argocd/%s/rollbackToStable", name),
 		method: "GET",
 	}, r)
 
