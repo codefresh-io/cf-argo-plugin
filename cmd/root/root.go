@@ -2,6 +2,7 @@ package root
 
 import (
 	"cf-argo-plugin/cmd/processResult"
+	"cf-argo-plugin/cmd/rollback"
 	"cf-argo-plugin/cmd/rollout"
 	"cf-argo-plugin/cmd/runTask"
 	"cf-argo-plugin/cmd/sync"
@@ -57,12 +58,14 @@ func init() {
 	rootCmd.AddCommand(rollout.Cmd)
 	rootCmd.AddCommand(runTask.Cmd)
 	rootCmd.AddCommand(processResult.Cmd)
+	rootCmd.AddCommand(rollback.Cmd)
 
 }
 
 func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
 	context.PluginCodefreshCredentials.Host = pluginAuthContext.CodefreshHost
 	context.PluginCodefreshCredentials.Token = pluginAuthContext.CodefreshToken
+	context.PluginCodefreshCredentials.Integration = pluginAuthContext.CodefreshIntegration
 
 	if pluginAuthContext.ArgoUsername != "" && pluginAuthContext.ArgoPassword != "" && pluginAuthContext.ArgoHost != "" {
 		context.PluginArgoCredentials.Host = pluginAuthContext.ArgoHost

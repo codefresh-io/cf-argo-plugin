@@ -11,6 +11,7 @@ type Codefresh interface {
 	GetIntegration(name string) (*ArgoIntegration, error)
 	StartSyncTask(name string) (*TaskResult, error)
 	SendMetadata(metadata *ArgoApplicationMetadata) error
+	RollbackToStable(name string, payload Rollback) (*TaskResult, error)
 	requestAPI(*requestOptions, interface{}) error
 }
 
@@ -37,6 +38,11 @@ type ArgoApplicationMetadata struct {
 	BuildId         string `json:"buildId"`
 	HistoryId       int64  `json:"historyId"`
 	ApplicationName string `json:"name"`
+}
+
+type Rollback struct {
+	ContextName     string `json:"contextName"`
+	ApplicationName string `json:"applicationName"`
 }
 
 type TaskResult struct {
@@ -109,6 +115,24 @@ func (c *codefresh) StartSyncTask(name string) (*TaskResult, error) {
 	err := c.requestAPI(&requestOptions{
 		path:   fmt.Sprintf("/api/environments-v2/sync/%s", name),
 		method: "GET",
+	}, r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func (c *codefresh) RollbackToStable(name string, payload Rollback) (*TaskResult, error) {
+	metadataBytes := new(bytes.Buffer)
+	json.NewEncoder(metadataBytes).Encode(payload)
+
+	r := &TaskResult{}
+	err := c.requestAPI(&requestOptions{
+		path:   fmt.Sprintf("/api/gitops/argocd/%s/rollbackToStable", name),
+		method: "POST",
+		body:   metadataBytes.Bytes(),
 	}, r)
 
 	if err != nil {
