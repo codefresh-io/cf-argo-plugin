@@ -38,7 +38,7 @@ var Cmd = &cobra.Command{
 				log.Println(fmt.Sprintf("Run rollback process pipeline, build link https://g.codefresh.io/build/%s", rollbackResult.BuildId))
 			}
 
-			return errors.New("running rollback flow")
+			return errors.New(fmt.Sprintf("ArgoCD app wait fails with the error \"%s\"", rollbackOptions.Message))
 		}
 
 		log.Println("Skip rollback execution")
