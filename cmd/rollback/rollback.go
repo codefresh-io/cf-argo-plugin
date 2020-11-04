@@ -3,6 +3,7 @@ package rollback
 import (
 	"cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"log"
@@ -28,7 +29,7 @@ var Cmd = &cobra.Command{
 		if rollbackOptions.Message != "" && rollbackOptions.NeedRollback {
 			log.Println(fmt.Sprintf("Start do rollback because message is \"%s\"", rollbackOptions.Message))
 
-			rollbackResult, err := cf.RollbackToStable(name, codefresh.Rollback{
+			rollbackResult, _ := cf.RollbackToStable(name, codefresh.Rollback{
 				ContextName:     context.PluginCodefreshCredentials.Integration,
 				ApplicationName: name,
 			})
@@ -37,7 +38,7 @@ var Cmd = &cobra.Command{
 				log.Println(fmt.Sprintf("Run rollback process pipeline, build link https://g.codefresh.io/build/%s", rollbackResult.BuildId))
 			}
 
-			return err
+			return errors.New("running rollback flow")
 		}
 
 		log.Println("Skip rollback execution")
