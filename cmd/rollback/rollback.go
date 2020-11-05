@@ -10,7 +10,7 @@ import (
 )
 
 var rollbackOptions struct {
-	Message string
+	Code int
 	// if customer want do rollback on failed argocd sync
 	NeedRollback bool
 }
@@ -26,8 +26,8 @@ var Cmd = &cobra.Command{
 			Host:  context.PluginCodefreshCredentials.Host,
 		})
 
-		if rollbackOptions.Message != "" && rollbackOptions.NeedRollback {
-			log.Println(fmt.Sprintf("Start do rollback because message is \"%s\"", rollbackOptions.Message))
+		if rollbackOptions.Code > 0 && rollbackOptions.NeedRollback {
+			log.Println(fmt.Sprintf("Start do rollback because code is \"%v\"", rollbackOptions.Code))
 
 			rollbackResult, _ := cf.RollbackToStable(name, codefresh.Rollback{
 				ContextName:     context.PluginCodefreshCredentials.Integration,
@@ -38,7 +38,7 @@ var Cmd = &cobra.Command{
 				log.Println(fmt.Sprintf("Run rollback process pipeline, build link https://g.codefresh.io/build/%s", rollbackResult.BuildId))
 			}
 
-			return errors.New(fmt.Sprintf("ArgoCD app wait fails with the error \"%s\"", rollbackOptions.Message))
+			return errors.New(fmt.Sprintf("ArgoCD app wait fails with the error code \"%v\"", rollbackOptions.Code))
 		}
 
 		log.Println("Skip rollback execution")
@@ -49,6 +49,6 @@ var Cmd = &cobra.Command{
 
 func init() {
 	f := Cmd.Flags()
-	f.StringVar(&rollbackOptions.Message, "message", "", "Error message from sync execution")
+	f.IntVar(&rollbackOptions.Code, "code", 0, "Error code from sync execution")
 	f.BoolVar(&rollbackOptions.NeedRollback, "needRollback", false, "Execute rollback if sync is failed")
 }
