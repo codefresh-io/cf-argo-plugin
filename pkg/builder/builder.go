@@ -50,35 +50,31 @@ func (b *builder) Auth(host string, username string, password string) error {
 	return nil
 }
 
-func wrapArgoCommandWithToken(command string, authToken string, host string) string {
+func buildTokenFlags(authToken string, host string) string {
 	if authToken != "" {
-		return fmt.Sprintf(command+"  --auth-token %s --server %s --insecure", authToken, host)
+		return fmt.Sprintf(" --auth-token %s --server %s --insecure", authToken, host)
 	}
-	return command
-}
-
-func buildCommandWithAllThings(basicCommand string, args *SyncArgs, authToken string, host string) string {
-	commandWithToken := wrapArgoCommandWithToken(basicCommand, authToken, host)
-	return commandWithToken
+	return ""
 }
 
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
 	hostDomain, _ := getHostDomain(host)
+	tokenFlags := buildTokenFlags(authToken, *hostDomain)
 	if args.Sync {
-		command := buildCommandWithAllThings(fmt.Sprintf("argocd app sync %s", name), args, authToken, *hostDomain)
+		command := fmt.Sprintf("argocd app sync %s %s", name, tokenFlags)
 		if args.Revision != "" {
 			command = fmt.Sprintf("%s --revision %s", command, args.Revision)
 		}
 		b.lines = append(b.lines, command)
 	}
 	if args.WaitHealthy {
-		cmd := buildCommandWithAllThings(fmt.Sprintf("{ argocd app wait %s %s; ARGO_SYNC_ERROR=$?; } || true ", name, args.WaitAdditionalFlags), args, authToken, *hostDomain)
+		cmd := fmt.Sprintf("{ argocd app wait %s %s %s; ARGO_SYNC_ERROR=$?; } || true ", name, args.WaitAdditionalFlags, tokenFlags)
 		b.lines = append(b.lines, cmd)
 		b.lines = append(b.lines, "cf_export ARGO_SYNC_ERROR=$ARGO_SYNC_ERROR")
 
 	}
 	if args.WaitForSuspend {
-		b.lines = append(b.lines, buildCommandWithAllThings(fmt.Sprintf("argocd app wait %s --suspended", name), args, authToken, *hostDomain))
+		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s --suspended", name, tokenFlags))
 	}
 }
 
