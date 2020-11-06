@@ -74,7 +74,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
            argocd app wait %s %s %s 2> /codefresh/volume/sync_error.log
         }
         if [[ $? -ne 0 ]]; then
-		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log)
+		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)     
 		fi
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
