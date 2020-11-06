@@ -68,10 +68,18 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		b.lines = append(b.lines, command)
 	}
 	if args.WaitHealthy {
-		cmd := fmt.Sprintf("{ argocd app wait %s %s %s; ARGO_SYNC_ERROR=$?; } || true ", name, args.WaitAdditionalFlags, tokenFlags)
+		cmd := fmt.Sprintf(`
+        {
+           set +e
+           argocd app wait %s %s %s 2> /codefresh/volume/sync_error.log
+        }
+        if [[ $? -ne 0 ]]; then
+		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)     
+		fi
+		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
+		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
+        `, name, args.WaitAdditionalFlags, tokenFlags)
 		b.lines = append(b.lines, cmd)
-		b.lines = append(b.lines, "cf_export ARGO_SYNC_ERROR=$ARGO_SYNC_ERROR")
-
 	}
 	if args.WaitForSuspend {
 		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s --suspended", name, tokenFlags))
