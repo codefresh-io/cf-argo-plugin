@@ -84,7 +84,8 @@ func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host
 	b.lines = append(b.lines, fmt.Sprintf("kubectl config use-context \"%s\"", args.KubernetesContext))
 	b.lines = append(b.lines, fmt.Sprintf("kubectl argo rollouts promote \"%s\" -n \"%s\"", args.RolloutName, args.RolloutNamespace))
 	if args.WaitHealthy {
-		b.lines = append(b.lines, wrapArgoCommandWithToken(fmt.Sprintf("argocd app wait %s", name), authToken, *hostDomain))
+		tokenFlags := buildTokenFlags(authToken, *hostDomain)
+		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s", name, tokenFlags))
 	}
 }
 
