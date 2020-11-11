@@ -10,6 +10,7 @@ type SyncArgs struct {
 	WaitHealthy         bool
 	WaitForSuspend      bool
 	Debug               bool
+	Prune               bool
 	AdditionalFlags     string
 	Revision            string
 	WaitAdditionalFlags string
@@ -50,16 +51,20 @@ func (b *builder) Auth(host string, username string, password string) error {
 	return nil
 }
 
-func buildTokenFlags(authToken string, host string) string {
+func buildTokenFlags(authToken string, host string, prune bool) string {
+	cmd := ""
 	if authToken != "" {
-		return fmt.Sprintf(" --auth-token %s --server %s --insecure", authToken, host)
+		cmd += fmt.Sprintf(" --auth-token %s --server %s --insecure", authToken, host)
 	}
-	return ""
+	if prune {
+		cmd += " --prune"
+	}
+	return cmd
 }
 
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
 	hostDomain, _ := getHostDomain(host)
-	tokenFlags := buildTokenFlags(authToken, *hostDomain)
+	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
 	if args.Sync {
 		command := fmt.Sprintf("argocd app sync %s %s", name, tokenFlags)
 		if args.Revision != "" {
@@ -92,7 +97,7 @@ func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host
 	b.lines = append(b.lines, fmt.Sprintf("kubectl config use-context \"%s\"", args.KubernetesContext))
 	b.lines = append(b.lines, fmt.Sprintf("kubectl argo rollouts promote \"%s\" -n \"%s\"", args.RolloutName, args.RolloutNamespace))
 	if args.WaitHealthy {
-		tokenFlags := buildTokenFlags(authToken, *hostDomain)
+		tokenFlags := buildTokenFlags(authToken, *hostDomain, false)
 		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s", name, tokenFlags))
 	}
 }
