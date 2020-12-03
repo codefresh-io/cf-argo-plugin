@@ -51,6 +51,7 @@ var Cmd = &cobra.Command{
 
 func exportGitopsInfo(applicationName string, updatedActivities []codefresh.UpdatedActivity) {
 	for _, activity := range updatedActivities {
+
 		if activity.EnvironmentName == applicationName {
 			os.Setenv("ACTIVITY_ID", activity.ActivityId)
 			os.Setenv("ENVIRONMENT_ID", activity.EnvironmentId)
