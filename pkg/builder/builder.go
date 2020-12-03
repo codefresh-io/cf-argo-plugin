@@ -119,8 +119,8 @@ func (b *builder) ExportExternalUrl(host string, name string) {
 }
 
 func (b *builder) ExportGitopsInfo(environmentId string, activityId string) {
-	envExportCmd := fmt.Sprintf("cf_export runArgoCd_CF_ENVIRONMENT_ID=\"%s\"", environmentId)
-	activityExportCmd := fmt.Sprintf("cf_export runArgoCd_CF_ACTIVITY_ID=\"%s\"", activityId)
+	envExportCmd := fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", environmentId)
+	activityExportCmd := fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activityId)
 	b.exportLines = append(b.exportLines, envExportCmd, activityExportCmd)
 }
 
