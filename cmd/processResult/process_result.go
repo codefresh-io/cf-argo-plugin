@@ -6,6 +6,7 @@ import (
 	"cf-argo-plugin/pkg/context"
 	"github.com/spf13/cobra"
 	"os"
+	"fmt"
 )
 
 var processResultArgsOptions struct {
@@ -50,11 +51,13 @@ var Cmd = &cobra.Command{
 }
 
 func exportGitopsInfo(applicationName string, updatedActivities []codefresh.UpdatedActivity) {
+    fmt.Println("exportGitopsInfo")
 	for _, activity := range updatedActivities {
 
 		if activity.EnvironmentName == applicationName {
 			os.Setenv("ACTIVITY_ID", activity.ActivityId)
 			os.Setenv("ENVIRONMENT_ID", activity.EnvironmentId)
+            fmt.Println("exportGitopsInfo successfully")
 			return
 		}
 	}
