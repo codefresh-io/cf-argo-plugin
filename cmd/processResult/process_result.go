@@ -2,16 +2,20 @@ package processResult
 
 import (
 	argo "cf-argo-plugin/pkg/argo"
+	"cf-argo-plugin/pkg/builder"
 	codefresh "cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
+	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"fmt"
+	"strings"
+	"errors"
 )
 
 var processResultArgsOptions struct {
-	PipelineId string
-	BuildId    string
+	PipelineId 				string
+	BuildId    				string
+	ExportOutGitopsCommand  string
 }
 
 var Cmd = &cobra.Command{
@@ -42,29 +46,54 @@ var Cmd = &cobra.Command{
 			ApplicationName: name,
 		})
 
-		if updatedActivities != nil {
-		    exportGitopsInfo(name, updatedActivities)
+		if updatedActivities != nil && processResultArgsOptions.ExportOutGitopsCommand != "" {
+
+            err, activity := filterActivity(name, updatedActivities)
+            if err == nil {
+                _ = exportGitopsInfo(activity)
+            }
 		}
 
 		return nil
 	},
 }
 
-func exportGitopsInfo(applicationName string, updatedActivities []codefresh.UpdatedActivity) {
-    fmt.Println("exportGitopsInfo")
+func exportGitopsInfo(activity codefresh.UpdatedActivity) error {
+	b := builder.New()
+	b.ExportGitopsInfo(activity.EnvironmentId, activity.ActivityId)
+	resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
+
+	file, err := os.Create(processResultArgsOptions.ExportOutGitopsCommand)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	_, err = file.WriteString(resultExportCommands)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func filterActivity(applicationName string, updatedActivities []codefresh.UpdatedActivity) (error, codefresh.UpdatedActivity) {
+	fmt.Println("filterActivity")
+	var rolloutActivity codefresh.UpdatedActivity
 	for _, activity := range updatedActivities {
 
 		if activity.EnvironmentName == applicationName {
-			os.Setenv("ACTIVITY_ID", activity.ActivityId)
-			os.Setenv("ENVIRONMENT_ID", activity.EnvironmentId)
-            fmt.Println("exportGitopsInfo successfully")
-			return
+			fmt.Println("filterActivity successfully")
+			return nil, activity
 		}
 	}
+	return errors.New(fmt.Sprintf("can't find activity with app name %s", applicationName)), rolloutActivity
 }
 
 func init() {
 	f := Cmd.Flags()
 	f.StringVar(&processResultArgsOptions.PipelineId, "pipeline-id", "", "Pipeline id where argo sync was executed")
 	f.StringVar(&processResultArgsOptions.BuildId, "build-id", "", "Build id where argo sync was executed")
+	f.StringVar(&processResultArgsOptions.ExportOutGitopsCommand, "out-export-file", "", "Write export commands to file")
 }
