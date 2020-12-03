@@ -5,6 +5,7 @@ import (
 	codefresh "cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var processResultArgsOptions struct {
@@ -33,15 +34,29 @@ var Cmd = &cobra.Command{
 		})
 
 		// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
-		cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
+		_, updatedActivities := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
 			Pipeline:        processResultArgsOptions.PipelineId,
 			BuildId:         processResultArgsOptions.BuildId,
 			HistoryId:       historyId,
 			ApplicationName: name,
 		})
 
+		if updatedActivities != nil {
+		    exportGitopsInfo(name, updatedActivities)
+		}
+
 		return nil
 	},
+}
+
+func exportGitopsInfo(applicationName string, updatedActivities []codefresh.UpdatedActivity) {
+	for _, activity := range updatedActivities {
+		if activity.EnvironmentName == applicationName {
+			os.Setenv("ACTIVITY_ID", activity.ActivityId)
+			os.Setenv("ENVIRONMENT_ID", activity.EnvironmentId)
+			return
+		}
+	}
 }
 
 func init() {
