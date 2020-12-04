@@ -20,7 +20,12 @@ var Cmd = &cobra.Command{
 
 		b := builder.New()
 
-		if context.PluginArgoCredentials.Token == "" {
+		// we are using healthy validation but without creds
+		if context.PluginCodefreshCredentials.Token == "" && context.PluginCodefreshCredentials.Host == "" && rolloutArgs.WaitHealthy {
+			return errors.New("For use wait_healthy flag you should provide context or argo credentials argument")
+		}
+
+		if context.PluginArgoCredentials.Token == "" && context.PluginCodefreshCredentials.Host != "" {
 			err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password)
 			if err != nil {
 				return err

@@ -85,8 +85,6 @@ func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
 		context.PluginArgoCredentials.Username = integration.Data.Username
 		context.PluginArgoCredentials.Password = integration.Data.Password
 		context.PluginArgoCredentials.Token = integration.Data.Token
-	} else {
-		return fmt.Errorf("can`t resolve argo context, you should provide correct codefresh or raw argo context")
 	}
 
 	return nil
