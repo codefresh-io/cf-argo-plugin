@@ -27,6 +27,7 @@ type Builder interface {
 	Auth(host string, username string, password string) error
 	Sync(args *SyncArgs, name string, authToken string, host string)
 	ExportExternalUrl(host string, name string)
+	ExportGitopsInfo(environmentId string, activityId string)
 	Rollout(args *RolloutArgs, name string, authToken string, host string)
 
 	GetLines() []string
@@ -79,7 +80,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
            argocd app wait %s %s %s 2> /codefresh/volume/sync_error.log
         }
         if [[ $? -ne 0 ]]; then
-		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)     
+		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)
 		fi
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
@@ -115,6 +116,12 @@ func (b *builder) ExportExternalUrl(host string, name string) {
 	command := fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", applicationUrl)
 	b.lines = append(b.lines, command)
 	b.exportLines = append(b.exportLines, command)
+}
+
+func (b *builder) ExportGitopsInfo(environmentId string, activityId string) {
+	envExportCmd := fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", environmentId)
+	activityExportCmd := fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activityId)
+	b.exportLines = append(b.exportLines, envExportCmd, activityExportCmd)
 }
 
 func getHostDomain(host string) (*string, error) {

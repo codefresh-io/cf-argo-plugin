@@ -10,7 +10,7 @@ import (
 type Codefresh interface {
 	GetIntegration(name string) (*ArgoIntegration, error)
 	StartSyncTask(name string) (*TaskResult, error)
-	SendMetadata(metadata *ArgoApplicationMetadata) error
+	SendMetadata(metadata *ArgoApplicationMetadata) (error, []UpdatedActivity)
 	RollbackToStable(name string, payload Rollback) (*TaskResult, error)
 	requestAPI(*requestOptions, interface{}) error
 }
@@ -63,6 +63,16 @@ type requestOptions struct {
 	body   []byte
 }
 
+type updateMetadataResponse struct {
+	Activities []UpdatedActivity `json:"activities"`
+}
+
+type UpdatedActivity struct {
+	ActivityId             string `json:"_id"`
+	EnvironmentId   string `json:"environmentId"`
+	EnvironmentName string `json:"environmentName"`
+}
+
 type codefresh struct {
 	host   string
 	token  string
@@ -91,11 +101,11 @@ func (c *codefresh) GetIntegration(name string) (*ArgoIntegration, error) {
 	return r, nil
 }
 
-func (c *codefresh) SendMetadata(metadata *ArgoApplicationMetadata) error {
+func (c *codefresh) SendMetadata(metadata *ArgoApplicationMetadata) (error, []UpdatedActivity) {
 	metadataBytes := new(bytes.Buffer)
 	json.NewEncoder(metadataBytes).Encode(metadata)
 
-	var result map[string]interface{}
+	var result  updateMetadataResponse
 
 	err := c.requestAPI(&requestOptions{
 		path:   fmt.Sprintf("/api/environments-v2/argo/metadata"),
@@ -104,10 +114,9 @@ func (c *codefresh) SendMetadata(metadata *ArgoApplicationMetadata) error {
 	}, &result)
 
 	if err != nil {
-		return err
+		return err, nil
 	}
-
-	return nil
+	return nil, result.Activities
 }
 
 func (c *codefresh) StartSyncTask(name string) (*TaskResult, error) {
