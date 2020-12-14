@@ -2,14 +2,12 @@ package processResult
 
 import (
 	argo "cf-argo-plugin/pkg/argo"
-	"cf-argo-plugin/pkg/builder"
 	codefresh "cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os/exec"
-	"strings"
 )
 
 var processResultArgsOptions struct {
@@ -49,7 +47,7 @@ var Cmd = &cobra.Command{
 		if updatedActivities != nil && processResultArgsOptions.ExportOutGitopsCommand != "" {
             err, activity := filterActivity(name, updatedActivities)
             if err == nil {
-                exportGitopsInfo(activity)
+               exportGitopsInfo(activity)
             }
 		}
 
@@ -59,13 +57,16 @@ var Cmd = &cobra.Command{
 
 func exportGitopsInfo(activity codefresh.UpdatedActivity) {
 	fmt.Println("Starting export Gitops Info")
-	b := builder.New()
-	b.ExportGitopsInfo(activity.EnvironmentId, activity.ActivityId)
-	resultExportCommands := strings.Join(b.GetExportLines()[:], " ")
-	cmd :=exec.Command(resultExportCommands)
+	//b := builder.New()
+	//b.ExportGitopsInfo(activity.EnvironmentId, activity.ActivityId)
+	//resultExportCommands := strings.Join(b.GetExecExportLines()[:], " ")
+	cmd := exec.Command("/bin/bash", "e",
+		fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId),
+		fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId),
+	)
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("Error while trying to updaet Gitops Info: \"%q\"", err.Error())
+		fmt.Printf("Error while trying to update Gitops Info: %q\n", err.Error())
 		return
 	}
 	fmt.Println("Gitops Info exported successfully")
