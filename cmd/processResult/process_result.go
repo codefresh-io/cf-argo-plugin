@@ -57,12 +57,10 @@ var Cmd = &cobra.Command{
 }
 
 func filterActivity(applicationName string, updatedActivities []codefresh.UpdatedActivity) (error, codefresh.UpdatedActivity) {
-	fmt.Println("filterActivity")
 	var rolloutActivity codefresh.UpdatedActivity
 	for _, activity := range updatedActivities {
 
 		if activity.EnvironmentName == applicationName {
-			fmt.Println("filterActivity successfully")
 			return nil, activity
 		}
 	}
