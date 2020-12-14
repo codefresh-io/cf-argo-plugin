@@ -11,15 +11,16 @@ import (
 )
 
 var processResultArgsOptions struct {
-	PipelineId 				string
-	BuildId    				string
-	ExportOutGitopsCommand  string
+	PipelineId             string
+	BuildId                string
+	ExportOutGitopsCommand string
 }
 
 var Cmd = &cobra.Command{
 	Use:   "process-result [app]",
 	Short: "Process plugin execution result",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		//exportGitopsInfo()
 		name := args[0]
 
 		argoApi := argo.Argo{
@@ -45,10 +46,10 @@ var Cmd = &cobra.Command{
 		})
 
 		if updatedActivities != nil && processResultArgsOptions.ExportOutGitopsCommand != "" {
-            err, activity := filterActivity(name, updatedActivities)
-            if err == nil {
-               exportGitopsInfo(activity)
-            }
+			err, activity := filterActivity(name, updatedActivities)
+			if err == nil {
+				exportGitopsInfo(activity)
+			}
 		}
 
 		return nil
@@ -60,7 +61,13 @@ func exportGitopsInfo(activity codefresh.UpdatedActivity) {
 	//b := builder.New()
 	//b.ExportGitopsInfo(activity.EnvironmentId, activity.ActivityId)
 	//resultExportCommands := strings.Join(b.GetExecExportLines()[:], " ")
-	cmd := exec.Command("/bin/bash", "e",
+
+	//cmd := exec.Command("/bin/bash", "-e",
+	//	fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", "activity.EnvironmentId"),
+	//	fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", "activity.ActivityId"),
+	//)
+
+	cmd := exec.Command("/bin/bash", "-e",
 		fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId),
 		fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId),
 	)
