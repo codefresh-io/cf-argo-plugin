@@ -1,21 +1,19 @@
 package processResult
 
 import (
-	argo "cf-argo-plugin/pkg/argo"
-	"cf-argo-plugin/pkg/builder"
-	codefresh "cf-argo-plugin/pkg/codefresh"
+	"cf-argo-plugin/pkg/argo"
+	"cf-argo-plugin/pkg/bash"
+	"cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
-	"errors"
 )
 
 var processResultArgsOptions struct {
-	PipelineId 				string
-	BuildId    				string
-	ExportOutGitopsCommand  string
+	PipelineId             string
+	BuildId                string
+	ExportOutGitopsCommand string
 }
 
 var Cmd = &cobra.Command{
@@ -48,34 +46,14 @@ var Cmd = &cobra.Command{
 
 		if updatedActivities != nil && processResultArgsOptions.ExportOutGitopsCommand != "" {
 
-            err, activity := filterActivity(name, updatedActivities)
-            if err == nil {
-                _ = exportGitopsInfo(activity)
-            }
+			err, activity := filterActivity(name, updatedActivities)
+			if err == nil {
+				bash.CommandExecutor{}.ExportGitopsInfo(activity)
+			}
 		}
 
 		return nil
 	},
-}
-
-func exportGitopsInfo(activity codefresh.UpdatedActivity) error {
-	b := builder.New()
-	b.ExportGitopsInfo(activity.EnvironmentId, activity.ActivityId)
-	resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
-
-	file, err := os.Create(processResultArgsOptions.ExportOutGitopsCommand)
-	if err != nil {
-		return err
-	}
-
-	defer file.Close()
-
-	_, err = file.WriteString(resultExportCommands)
-
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func filterActivity(applicationName string, updatedActivities []codefresh.UpdatedActivity) (error, codefresh.UpdatedActivity) {
