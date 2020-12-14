@@ -5,11 +5,11 @@ import (
 	"cf-argo-plugin/pkg/builder"
 	codefresh "cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
+	"os/exec"
 	"strings"
-	"errors"
 )
 
 var processResultArgsOptions struct {
@@ -47,10 +47,9 @@ var Cmd = &cobra.Command{
 		})
 
 		if updatedActivities != nil && processResultArgsOptions.ExportOutGitopsCommand != "" {
-
             err, activity := filterActivity(name, updatedActivities)
             if err == nil {
-                _ = exportGitopsInfo(activity)
+                exportGitopsInfo(activity)
             }
 		}
 
@@ -58,24 +57,18 @@ var Cmd = &cobra.Command{
 	},
 }
 
-func exportGitopsInfo(activity codefresh.UpdatedActivity) error {
+func exportGitopsInfo(activity codefresh.UpdatedActivity) {
+	fmt.Println("Starting export Gitops Info")
 	b := builder.New()
 	b.ExportGitopsInfo(activity.EnvironmentId, activity.ActivityId)
-	resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
-
-	file, err := os.Create(processResultArgsOptions.ExportOutGitopsCommand)
+	resultExportCommands := strings.Join(b.GetExportLines()[:], " ")
+	cmd :=exec.Command(resultExportCommands)
+	err := cmd.Run()
 	if err != nil {
-		return err
+		fmt.Printf("Error while trying to updaet Gitops Info: \"%q\"", err.Error())
+		return
 	}
-
-	defer file.Close()
-
-	_, err = file.WriteString(resultExportCommands)
-
-	if err != nil {
-		return err
-	}
-	return nil
+	fmt.Println("Gitops Info exported successfully")
 }
 
 func filterActivity(applicationName string, updatedActivities []codefresh.UpdatedActivity) (error, codefresh.UpdatedActivity) {
