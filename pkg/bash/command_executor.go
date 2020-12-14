@@ -22,6 +22,6 @@ func execCommand(command string) {
 }
 
 func (commandExecutor CommandExecutor) ExportGitopsInfo(activity codefresh.UpdatedActivity) {
-	execCommand(fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId))
-	execCommand(fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId))
+	execCommand(fmt.Sprintf("/codefresh/volume/cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId))
+	execCommand(fmt.Sprintf("/codefresh/volume/cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId))
 }
