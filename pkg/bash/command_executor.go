@@ -10,12 +10,12 @@ type CommandExecutor struct {
 }
 
 func (commandExecutor CommandExecutor) ExportGitopsInfo(activity codefresh.UpdatedActivity) {
-	output, err := exec.Command("/bin/sh", fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId)).Output()
+	err := exec.Command("/bin/sh", fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId)).Run()
 	if err != nil {
-		fmt.Printf("Failed to export env id: %s, %s\n", err.Error(), output)
+		fmt.Printf("Failed to export env id: %s\n", err.Error())
 	}
-	output, err = exec.Command("/bin/sh", fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId)).Output()
+	err = exec.Command("/bin/sh", fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId)).Run()
 	if err != nil {
-		fmt.Printf("Failed to export activity id: %s, result %s\n", err.Error(), output)
+		fmt.Printf("Failed to export activity id: %s\n", err.Error())
 	}
 }
