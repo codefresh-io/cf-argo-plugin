@@ -11,7 +11,7 @@ type CommandExecutor struct {
 }
 
 func execCommand(command string) {
-	cmd := exec.Command("/codefresh/volume/cf_export", command)
+	cmd := exec.Command("/bin/bash", command)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -22,6 +22,6 @@ func execCommand(command string) {
 }
 
 func (commandExecutor CommandExecutor) ExportGitopsInfo(activity codefresh.UpdatedActivity) {
-	execCommand(fmt.Sprintf("sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId))
-	execCommand(fmt.Sprintf("sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId))
+	execCommand(fmt.Sprintf("cf_export sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId))
+	execCommand(fmt.Sprintf("cf_export sendArgoMetadata_CF_ACTIVITY_ID=\"%s\"", activity.ActivityId))
 }
