@@ -33,7 +33,7 @@ func execCommand2(command string) {
 }
 
 func execCommand3(command string) {
-	cmd := exec.Command("bash", "-c", "MY_PLUGIN_VAR=SAMPLE_VALUE >> /meta/env_vars_to_export")
+	cmd := exec.Command("bash", "-c", "echo MY_PLUGIN_VAR=SAMPLE_VALUE >> /meta/env_vars_to_export")
 
 	err := cmd.Run()
 
