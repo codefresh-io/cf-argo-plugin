@@ -4,14 +4,16 @@ import (
 	"cf-argo-plugin/pkg/codefresh"
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
 type CommandExecutor struct {
 }
 
 func execCommand(command string) {
-	cmd := exec.Command("/bin/bash", "\"echo "+command+" >> /meta/env_vars_to_export\"")
+	cmd := exec.Command("/bin/bash", "-c", "echo "+command+" >> /meta/env_vars_to_export")
 	err := cmd.Run()
+	fmt.Println(strings.Join(cmd.Args, ","))
 	if err != nil {
 		fmt.Printf("Failed to execute export command: %v\n", err)
 	}
