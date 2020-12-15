@@ -22,7 +22,7 @@ func execCommand(command string) {
 }
 
 func execCommand2(command string) {
-	cmd := exec.Command("/bin/bash", "cf_export", command)
+	cmd := exec.Command("/bin/bash", "echo MY_PLUGIN_VAR=SAMPLE_VALUE >> /meta/env_vars_to_export ")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -35,4 +35,5 @@ func execCommand2(command string) {
 func (commandExecutor CommandExecutor) ExportGitopsInfo(activity codefresh.UpdatedActivity) {
 	execCommand(fmt.Sprintf("sendArgoMetadata_CF_ENVIRONMENT_ID=\"%s\"", activity.EnvironmentId))
 	execCommand(fmt.Sprintf("sendArgoMetadata_CF_ACTIVITY_ID=%s", activity.ActivityId))
+	execCommand2("")
 }
