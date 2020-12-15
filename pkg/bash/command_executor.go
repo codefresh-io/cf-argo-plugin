@@ -11,7 +11,7 @@ type CommandExecutor struct {
 }
 
 func execCommand(command string) {
-	cmd := exec.Command("/bin/bash", "cf_export", command)
+	cmd := exec.Command("/bin/bash", "echo", command, ">>", "/meta/env_vars_to_export")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
