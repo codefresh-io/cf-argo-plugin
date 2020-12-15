@@ -22,7 +22,7 @@ func execCommand(command string) {
 }
 
 func execCommand2(command string) {
-	cmd := exec.Command("/bin/bash", "echo MY_PLUGIN_VAR=SAMPLE_VALUE >> /meta/env_vars_to_export ")
+	cmd := exec.Command("/bin/bash", "echo 1")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
