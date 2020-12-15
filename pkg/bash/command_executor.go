@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cf-argo-plugin/pkg/codefresh"
 	"fmt"
+	"os"
 	"os/exec"
 )
 
@@ -33,8 +34,17 @@ func execCommand2(command string) {
 }
 
 func execCommand3(command string) {
-	cmd := exec.Command("/bin/echo", "MY_PLUGIN_VAR=SAMPLE_VALUE >> /meta/env_vars_to_export")
-	err := cmd.Run()
+	cmd := exec.Command("/bin/echo", "MY_PLUGIN_VAR=SAMPLE_VALUE")
+
+	outfile, err := os.Create("/tmp/env_vars_to_export")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer outfile.Close()
+	cmd.Stdout = outfile
+
+	err = cmd.Run()
+
 	if err != nil {
 		fmt.Printf("Failed to execute export command: %v\n", err)
 	}
