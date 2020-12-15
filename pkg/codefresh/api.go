@@ -68,9 +68,10 @@ type updateMetadataResponse struct {
 }
 
 type UpdatedActivity struct {
-	ActivityId             string `json:"_id"`
+	ActivityId      string `json:"_id"`
 	EnvironmentId   string `json:"environmentId"`
 	EnvironmentName string `json:"environmentName"`
+	ApplicationName string `json:"applicationName"`
 }
 
 type codefresh struct {
@@ -105,7 +106,7 @@ func (c *codefresh) SendMetadata(metadata *ArgoApplicationMetadata) (error, []Up
 	metadataBytes := new(bytes.Buffer)
 	json.NewEncoder(metadataBytes).Encode(metadata)
 
-	var result  updateMetadataResponse
+	var result updateMetadataResponse
 
 	err := c.requestAPI(&requestOptions{
 		path:   fmt.Sprintf("/api/environments-v2/argo/metadata"),
