@@ -66,6 +66,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 	hostDomain, _ := getHostDomain(host)
 	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
 	if args.Sync {
+		b.lines = append(b.lines, "cf-argo-plugin wait-rollout "+name+" --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration="+context+" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
 		command := fmt.Sprintf("argocd app sync %s %s", name, tokenFlags)
 		if args.Revision != "" {
 			command = fmt.Sprintf("%s --revision %s", command, args.Revision)
@@ -73,7 +74,6 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		b.lines = append(b.lines, command)
 	}
 
-	b.lines = append(b.lines, "cf-argo-plugin wait-rollout "+name+" --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration="+context+" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
         {
