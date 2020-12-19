@@ -65,6 +65,14 @@ func buildTokenFlags(authToken string, host string, prune bool) string {
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string, context string) {
 	hostDomain, _ := getHostDomain(host)
 	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
+	if args.WaitHealthy {
+		cmd := fmt.Sprintf(`
+		cf-argo-plugin wait-rollout %s --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=%s --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
+        sleep 5s
+        `, name, context)
+		b.lines = append(b.lines, cmd)
+	}
+
 	if args.Sync {
 		command := fmt.Sprintf("argocd app sync %s %s", name, tokenFlags)
 		if args.Revision != "" {
@@ -75,8 +83,6 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
-		cf-argo-plugin wait-rollout %s --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=%s --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
-        sleep 5s
 		{
            set +e
            argocd app wait %s %s %s 2> /codefresh/volume/sync_error.log
@@ -88,7 +94,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
-        `, name, context, name, args.WaitAdditionalFlags, tokenFlags)
+        `, name, args.WaitAdditionalFlags, tokenFlags)
 		b.lines = append(b.lines, cmd)
 	}
 	if args.WaitForSuspend {
