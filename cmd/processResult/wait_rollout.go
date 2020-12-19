@@ -11,15 +11,6 @@ import (
 	"time"
 )
 
-type (
-	WaitRollout interface {
-		Wait(name string, pipelineId string, buildId string) error
-	}
-
-	waitRollout struct {
-	}
-)
-
 var waitRolloutArgsOptions struct {
 	PipelineId string
 	BuildId    string
@@ -44,21 +35,6 @@ var WaitRolloutCmd = &cobra.Command{
 			Token: context.PluginCodefreshCredentials.Token,
 			Host:  context.PluginCodefreshCredentials.Host,
 		})
-
-		envs, _ := cf.GetEnvironments()
-
-		var existingEnv *codefresh.CFEnvironment
-
-		for _, env := range envs {
-			if env.Spec.Application == name {
-				existingEnv = &env
-			}
-		}
-
-		if existingEnv == nil {
-			fmt.Println("Skip because app dont exist inside platform")
-			return nil
-		}
 
 		historyId, _ := argoApi.GetLatestHistoryId(name)
 		fmt.Println(fmt.Sprintf("Current history id %v", historyId))
@@ -92,7 +68,7 @@ var WaitRolloutCmd = &cobra.Command{
 			time.Sleep(10 * time.Second)
 
 			elapsed := time.Now().Sub(start)
-			if elapsed.Minutes() >= 15 {
+			if elapsed.Minutes() >= 5 {
 				return nil
 			}
 		}
