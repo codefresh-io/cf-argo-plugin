@@ -4,7 +4,6 @@ import (
 	"cf-argo-plugin/cmd/processResult"
 	"cf-argo-plugin/cmd/rollback"
 	"cf-argo-plugin/cmd/rollout"
-	"cf-argo-plugin/cmd/runTask"
 	"cf-argo-plugin/cmd/sync"
 	"cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
@@ -56,7 +55,7 @@ func init() {
 
 	rootCmd.AddCommand(sync.Cmd)
 	rootCmd.AddCommand(rollout.Cmd)
-	rootCmd.AddCommand(runTask.Cmd)
+	rootCmd.AddCommand(processResult.WaitRolloutCmd)
 	rootCmd.AddCommand(processResult.Cmd)
 	rootCmd.AddCommand(rollback.Cmd)
 
