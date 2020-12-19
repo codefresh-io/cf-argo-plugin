@@ -25,7 +25,7 @@ type RolloutArgs struct {
 
 type Builder interface {
 	Auth(host string, username string, password string) error
-	Sync(args *SyncArgs, name string, authToken string, host string)
+	Sync(args *SyncArgs, name string, authToken string, host string, context string)
 	ExportExternalUrl(host string, name string)
 	Rollout(args *RolloutArgs, name string, authToken string, host string)
 
@@ -62,7 +62,7 @@ func buildTokenFlags(authToken string, host string, prune bool) string {
 	return cmd
 }
 
-func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string) {
+func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string, context string) {
 	hostDomain, _ := getHostDomain(host)
 	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
 	if args.Sync {
@@ -73,7 +73,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		b.lines = append(b.lines, command)
 	}
 
-	b.lines = append(b.lines, "cf-argo-plugin wait-rollout "+name+" --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=\"${{context}}\" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
+	b.lines = append(b.lines, "cf-argo-plugin wait-rollout "+name+" --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration="+context+" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
         {
