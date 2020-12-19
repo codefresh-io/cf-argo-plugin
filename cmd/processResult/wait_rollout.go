@@ -40,30 +40,57 @@ var WaitRolloutCmd = &cobra.Command{
 			Token:    context.PluginArgoCredentials.Token,
 		}
 
-		historyId, _ := argoApi.GetLatestHistoryId(name)
-
 		cf := codefresh.New(&codefresh.ClientOptions{
 			Token: context.PluginCodefreshCredentials.Token,
 			Host:  context.PluginCodefreshCredentials.Host,
 		})
 
-		// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
-		_, updatedActivities := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
-			Pipeline:        waitRolloutArgsOptions.PipelineId,
-			BuildId:         waitRolloutArgsOptions.BuildId,
-			HistoryId:       historyId,
-			ApplicationName: name,
-		})
+		envs, _ := cf.GetEnvironments()
 
-		if updatedActivities != nil {
+		var existingEnv *codefresh.CFEnvironment
 
-			err, activity := filterActivity(name, updatedActivities)
-			if err == nil {
-				bash.CommandExecutor{}.ExportGitopsInfo(activity)
+		for _, env := range envs {
+			if env.Spec.Application == name {
+				existingEnv = &env
 			}
 		}
 
-		return nil
+		if existingEnv == nil {
+			return nil
+		}
+
+		historyId, _ := argoApi.GetLatestHistoryId(name)
+		start := time.Now()
+		for {
+			currentHistoryId, _ := argoApi.GetLatestHistoryId(name)
+			// we identify new rollout
+			if currentHistoryId > historyId {
+				// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
+				_, updatedActivities := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
+					Pipeline:        waitRolloutArgsOptions.PipelineId,
+					BuildId:         waitRolloutArgsOptions.BuildId,
+					HistoryId:       currentHistoryId,
+					ApplicationName: name,
+				})
+
+				if updatedActivities != nil {
+
+					err, activity := filterActivity(name, updatedActivities)
+					if err == nil {
+						bash.CommandExecutor{}.ExportGitopsInfo(activity)
+					}
+				}
+
+				return nil
+			}
+
+			time.Sleep(10 * time.Second)
+
+			elapsed := time.Now().Sub(start)
+			if elapsed.Minutes() >= 15 {
+				return nil
+			}
+		}
 	},
 }
 
@@ -71,67 +98,6 @@ func init() {
 	f := WaitRolloutCmd.Flags()
 	f.StringVar(&waitRolloutArgsOptions.PipelineId, "pipeline-id", "", "Pipeline id where argo sync was executed")
 	f.StringVar(&waitRolloutArgsOptions.BuildId, "build-id", "", "Build id where argo sync was executed")
-}
-
-func (wr *waitRollout) Wait(name string, pipelineId string, buildId string) error {
-	argoApi := argo.Argo{
-		Host:     context.PluginArgoCredentials.Host,
-		Username: context.PluginArgoCredentials.Username,
-		Password: context.PluginArgoCredentials.Password,
-		Token:    context.PluginArgoCredentials.Token,
-	}
-
-	cf := codefresh.New(&codefresh.ClientOptions{
-		Token: context.PluginCodefreshCredentials.Token,
-		Host:  context.PluginCodefreshCredentials.Host,
-	})
-
-	envs, _ := cf.GetEnvironments()
-
-	var existingEnv *codefresh.CFEnvironment
-
-	for _, env := range envs {
-		if env.Spec.Application == name {
-			existingEnv = &env
-		}
-	}
-
-	if existingEnv == nil {
-		return nil
-	}
-
-	historyId, _ := argoApi.GetLatestHistoryId(name)
-	start := time.Now()
-	for {
-		currentHistoryId, _ := argoApi.GetLatestHistoryId(name)
-		// we identify new rollout
-		if currentHistoryId > historyId {
-			// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
-			_, updatedActivities := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
-				Pipeline:        pipelineId,
-				BuildId:         buildId,
-				HistoryId:       currentHistoryId,
-				ApplicationName: name,
-			})
-
-			if updatedActivities != nil {
-
-				err, activity := filterActivity(name, updatedActivities)
-				if err == nil {
-					bash.CommandExecutor{}.ExportGitopsInfo(activity)
-				}
-			}
-
-			return nil
-		}
-
-		time.Sleep(10 * time.Second)
-
-		elapsed := time.Now().Sub(start)
-		if elapsed.Minutes() >= 15 {
-			return nil
-		}
-	}
 }
 
 func filterActivity(applicationName string, updatedActivities []codefresh.UpdatedActivity) (error, codefresh.UpdatedActivity) {
