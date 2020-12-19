@@ -65,6 +65,7 @@ func buildTokenFlags(authToken string, host string, prune bool) string {
 func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string, context string) {
 	hostDomain, _ := getHostDomain(host)
 	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
+	tokenFlagsWithoutPrune := buildTokenFlags(authToken, *hostDomain, false)
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
 		cf-argo-plugin wait-rollout %s --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=%s --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
@@ -94,11 +95,11 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
-        `, name, args.WaitAdditionalFlags, tokenFlags)
+        `, name, args.WaitAdditionalFlags, tokenFlagsWithoutPrune)
 		b.lines = append(b.lines, cmd)
 	}
 	if args.WaitForSuspend {
-		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s --suspended", name, tokenFlags))
+		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s --suspended", name, tokenFlagsWithoutPrune))
 	}
 }
 
