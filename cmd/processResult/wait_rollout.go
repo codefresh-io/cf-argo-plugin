@@ -31,6 +31,8 @@ var WaitRolloutCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name := args[0]
 
+		fmt.Println("Start execute wait for rollout " + name)
+
 		argoApi := argo.Argo{
 			Host:     context.PluginArgoCredentials.Host,
 			Username: context.PluginArgoCredentials.Username,
