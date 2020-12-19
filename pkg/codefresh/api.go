@@ -12,6 +12,7 @@ type Codefresh interface {
 	StartSyncTask(name string) (*TaskResult, error)
 	SendMetadata(metadata *ArgoApplicationMetadata) (error, []UpdatedActivity)
 	RollbackToStable(name string, payload Rollback) (*TaskResult, error)
+	GetEnvironments() ([]CFEnvironment, error)
 	requestAPI(*requestOptions, interface{}) error
 }
 
@@ -31,6 +32,20 @@ type ClientOptions struct {
 type ArgoIntegration struct {
 	Type string              `json:"type"`
 	Data ArgoIntegrationData `json:"data"`
+}
+
+type MongoCFEnvWrapper struct {
+	Docs []CFEnvironment `json:"docs"`
+}
+
+type CFEnvironment struct {
+	Metadata struct {
+		Name string `json:"name"`
+	} `json:"metadata"`
+	Spec struct {
+		Type        string `json:"type"`
+		Application string `json:"application"`
+	} `json:"spec"`
 }
 
 type ArgoApplicationMetadata struct {
@@ -150,6 +165,19 @@ func (c *codefresh) RollbackToStable(name string, payload Rollback) (*TaskResult
 	}
 
 	return r, nil
+}
+
+func (c *codefresh) GetEnvironments() ([]CFEnvironment, error) {
+	var result MongoCFEnvWrapper
+	err := c.requestAPI(&requestOptions{
+		method: "GET",
+		path:   "/api/environments-v2?plain=true&isEnvironment=false",
+	}, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result.Docs, nil
 }
 
 func (c *codefresh) requestAPI(opt *requestOptions, target interface{}) error {
