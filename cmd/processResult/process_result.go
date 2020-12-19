@@ -5,8 +5,6 @@ import (
 	"cf-argo-plugin/pkg/bash"
 	"cf-argo-plugin/pkg/codefresh"
 	"cf-argo-plugin/pkg/context"
-	"errors"
-	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -54,17 +52,6 @@ var Cmd = &cobra.Command{
 
 		return nil
 	},
-}
-
-func filterActivity(applicationName string, updatedActivities []codefresh.UpdatedActivity) (error, codefresh.UpdatedActivity) {
-	var rolloutActivity codefresh.UpdatedActivity
-	for _, activity := range updatedActivities {
-
-		if activity.EnvironmentName == applicationName {
-			return nil, activity
-		}
-	}
-	return errors.New(fmt.Sprintf("can't find activity with app name %s", applicationName)), rolloutActivity
 }
 
 func init() {
