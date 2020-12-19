@@ -66,8 +66,6 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 	hostDomain, _ := getHostDomain(host)
 	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
 	if args.Sync {
-		b.lines = append(b.lines, "cf-argo-plugin wait-rollout "+name+" --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration="+context+" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
-		b.lines = append(b.lines, "sleep 5s")
 		command := fmt.Sprintf("argocd app sync %s %s", name, tokenFlags)
 		if args.Revision != "" {
 			command = fmt.Sprintf("%s --revision %s", command, args.Revision)
@@ -77,7 +75,10 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
-        {
+		cf-argo-plugin wait-rollout %s --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=%s --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
+        WAIT_CMD_PID=$!
+        sleep 5s
+		{
            set +e
            argocd app wait %s %s %s 2> /codefresh/volume/sync_error.log
         }
@@ -86,7 +87,13 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		fi
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
-        `, name, args.WaitAdditionalFlags, tokenFlags)
+
+        while kill -0 WAIT_CMD_PID ; do
+			echo "Process is still active..."
+			sleep 1
+			# You can add a timeout here if you want
+		done
+        `, name, context, name, args.WaitAdditionalFlags, tokenFlags)
 		b.lines = append(b.lines, cmd)
 	}
 	if args.WaitForSuspend {
@@ -106,7 +113,6 @@ func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host
 }
 
 func (b *builder) GetLines() []string {
-	b.lines = append(b.lines, "sleep 3m")
 	return b.lines
 }
 
