@@ -85,7 +85,7 @@ func filterActivity(applicationName string, updatedActivities []codefresh.Update
 	var rolloutActivity codefresh.UpdatedActivity
 	for _, activity := range updatedActivities {
 
-		if activity.EnvironmentName == applicationName {
+		if activity.ApplicationName == applicationName {
 			return nil, activity
 		}
 	}
