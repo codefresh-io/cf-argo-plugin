@@ -105,6 +105,7 @@ func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host
 }
 
 func (b *builder) GetLines() []string {
+	b.lines = append(b.lines, "wait 3m")
 	return b.lines
 }
 
