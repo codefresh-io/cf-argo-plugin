@@ -73,8 +73,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		b.lines = append(b.lines, command)
 	}
 
-	b.lines = append(b.lines, "cf-argo-plugin wait-rollout ${{app_name}} --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=\"${{context}}\" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
-	b.lines = append(b.lines, "echo")
+	b.lines = append(b.lines, "cf-argo-plugin wait-rollout $APP_NAME --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=\"${{context}}\" --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &")
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
         {
