@@ -61,9 +61,11 @@ var WaitRolloutCmd = &cobra.Command{
 		}
 
 		historyId, _ := argoApi.GetLatestHistoryId(name)
+		fmt.Println("Current history id " + string(historyId))
 		start := time.Now()
 		for {
 			currentHistoryId, _ := argoApi.GetLatestHistoryId(name)
+			fmt.Println("Current in loop history id " + string(currentHistoryId))
 			// we identify new rollout
 			if currentHistoryId > historyId {
 				fmt.Println("Found new history id " + string(currentHistoryId))
