@@ -76,7 +76,6 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 	if args.WaitHealthy {
 		cmd := fmt.Sprintf(`
 		cf-argo-plugin wait-rollout %s --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=%s --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
-        WAIT_CMD_PID=$!
         sleep 5s
 		{
            set +e
@@ -88,11 +87,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
-        while kill -0 WAIT_CMD_PID ; do
-			echo "Process is still active..."
-			sleep 1
-			# You can add a timeout here if you want
-		done
+        wait
         `, name, context, name, args.WaitAdditionalFlags, tokenFlags)
 		b.lines = append(b.lines, cmd)
 	}
