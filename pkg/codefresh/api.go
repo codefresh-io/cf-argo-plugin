@@ -86,6 +86,7 @@ type UpdatedActivity struct {
 	ActivityId      string `json:"_id"`
 	EnvironmentId   string `json:"environmentId"`
 	EnvironmentName string `json:"environmentName"`
+	ApplicationName string `json:"applicationName"`
 }
 
 type codefresh struct {
