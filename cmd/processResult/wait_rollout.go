@@ -68,7 +68,7 @@ var WaitRolloutCmd = &cobra.Command{
 			time.Sleep(10 * time.Second)
 
 			elapsed := time.Now().Sub(start)
-			if elapsed.Minutes() >= 5 {
+			if elapsed.Minutes() >= 15 {
 				return nil
 			}
 		}
