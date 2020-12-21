@@ -37,14 +37,14 @@ var WaitRolloutCmd = &cobra.Command{
 		})
 
 		historyId, _ := argoApi.GetLatestHistoryId(name)
-		fmt.Println(fmt.Sprintf("Current history id %v", historyId))
+		//fmt.Println(fmt.Sprintf("Current history id %v", historyId))
 		start := time.Now()
 		for {
 			currentHistoryId, _ := argoApi.GetLatestHistoryId(name)
-			fmt.Println(fmt.Sprintf("Current in loop history id %v", currentHistoryId))
+			//fmt.Println(fmt.Sprintf("Current in loop history id %v", currentHistoryId))
 			// we identify new rollout
 			if currentHistoryId > historyId {
-				fmt.Println(fmt.Sprintf("Found new history id %v", currentHistoryId))
+				//fmt.Println(fmt.Sprintf("Found new history id %v", currentHistoryId))
 
 				// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
 				_, updatedActivities := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
