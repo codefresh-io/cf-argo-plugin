@@ -46,6 +46,9 @@ var WaitRolloutCmd = &cobra.Command{
 			if currentHistoryId > historyId {
 				fmt.Println(fmt.Sprintf("Found new history id %v", currentHistoryId))
 
+				// wait before activity on codefresh will be created
+				time.Sleep(15 * time.Second)
+
 				// ignore till we will handle it in correct way, 500 code mean that history not found and we shouldnt break pipeline
 				_, updatedActivities := cf.SendMetadata(&codefresh.ArgoApplicationMetadata{
 					Pipeline:        waitRolloutArgsOptions.PipelineId,
@@ -58,8 +61,11 @@ var WaitRolloutCmd = &cobra.Command{
 
 					err, activity := filterActivity(name, updatedActivities)
 					if err == nil {
+						fmt.Println(fmt.Sprintf("Start export gitops information"))
 						bash.CommandExecutor{}.ExportGitopsInfo(activity)
 					}
+				} else {
+					fmt.Println(fmt.Sprintf("Cant export gitops info, because didnt find related activities"))
 				}
 
 				return nil
