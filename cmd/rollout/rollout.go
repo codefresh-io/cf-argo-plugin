@@ -86,6 +86,7 @@ func init() {
 	f.StringVar(&rolloutArgs.RolloutName, "rollout-name", "", "The name of the rollout to be promoted.")
 	f.StringVar(&rolloutArgs.RolloutNamespace, "rollout-namespace", "default", "The namespace of the rollout to be promoted.")
 	f.BoolVar(&rolloutArgs.WaitHealthy, "wait-healthy", true, "Specify whether to wait for sync to be completed (in canary consider wait for suspended status)")
+	f.StringVar(&rolloutArgs.WaitAdditionalFlags, "wait-additional-flags", "", "Specify additional flags for wait command, like --timeout , so on")
 
 	_ = cobra.MarkFlagRequired(f, "k8s-context")
 	_ = cobra.MarkFlagRequired(f, "rollout-name")

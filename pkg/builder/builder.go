@@ -17,10 +17,11 @@ type SyncArgs struct {
 }
 
 type RolloutArgs struct {
-	KubernetesContext string
-	RolloutName       string
-	RolloutNamespace  string
-	WaitHealthy       bool
+	KubernetesContext   string
+	RolloutName         string
+	RolloutNamespace    string
+	WaitHealthy         bool
+	WaitAdditionalFlags string
 }
 
 type Builder interface {
@@ -110,7 +111,7 @@ func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host
 	b.lines = append(b.lines, fmt.Sprintf("kubectl argo rollouts promote \"%s\" -n \"%s\"", args.RolloutName, args.RolloutNamespace))
 	if args.WaitHealthy {
 		tokenFlags := buildTokenFlags(authToken, *hostDomain, false)
-		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s", name, tokenFlags))
+		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s", name, args.WaitAdditionalFlags, tokenFlags))
 	}
 }
 
