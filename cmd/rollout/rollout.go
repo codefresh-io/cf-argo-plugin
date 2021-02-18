@@ -18,6 +18,10 @@ var Cmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name := args[0]
 
+		if rolloutArgs.WaitHealthy && name == "" {
+			return errors.New("Failed to use wait_healthy without app_name parameter")
+		}
+
 		b := builder.New()
 
 		// we are using healthy validation but without creds
