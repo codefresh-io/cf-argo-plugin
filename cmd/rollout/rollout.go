@@ -37,6 +37,10 @@ var Cmd = &cobra.Command{
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
 
+		if rolloutArgs.Debug {
+			fmt.Println("Command to execute: " + resultCommands)
+		}
+
 		if context.PluginOutConfig.CommandsFile != "" {
 			file, err := os.Create(context.PluginOutConfig.CommandsFile)
 			if err != nil {
@@ -87,6 +91,7 @@ func init() {
 	f.StringVar(&rolloutArgs.RolloutNamespace, "rollout-namespace", "default", "The namespace of the rollout to be promoted.")
 	f.BoolVar(&rolloutArgs.WaitHealthy, "wait-healthy", true, "Specify whether to wait for sync to be completed (in canary consider wait for suspended status)")
 	f.StringVar(&rolloutArgs.WaitAdditionalFlags, "wait-additional-flags", "", "Specify additional flags for wait command, like --timeout , so on")
+	f.BoolVar(&rolloutArgs.Debug, "debug", false, "Debug argocd command ( print commands to output )")
 
 	_ = cobra.MarkFlagRequired(f, "k8s-context")
 	_ = cobra.MarkFlagRequired(f, "rollout-name")

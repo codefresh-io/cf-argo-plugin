@@ -22,6 +22,7 @@ type RolloutArgs struct {
 	RolloutNamespace    string
 	WaitHealthy         bool
 	WaitAdditionalFlags string
+	Debug               bool
 }
 
 type Builder interface {
