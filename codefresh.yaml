@@ -1,0 +1,70 @@
+version: "1.0"
+stages:
+  - "clone"
+  - "prepare"
+  - "build"
+  - "test"
+  - "push"
+steps:
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "codefresh-io/cf-argo-plugin"
+    revision: "${{CF_BRANCH}}"
+    git: "cf_github"
+    stage: "clone"
+
+  unit_test:
+    stage: "prepare"
+    title: 'Running unit tests'
+    working_directory: ${{main_clone}}
+    image: golang:1.14.2
+    commands:
+      - go get -u github.com/mcubik/goverreport
+      - go test ./... -coverpkg=./... -race -coverprofile=coverage.out -covermode=atomic
+    when:
+      steps:
+        - name: main_clone
+          on:
+            - success
+
+  fetch_envs:
+    stage: prepare
+    title: "Fetch envs"
+    image: alpine
+    commands:
+      - cf_export VERSION=$(cat $CF_REPO_NAME/VERSION)
+  build:
+    title: "Building Docker image"
+    type: "build"
+    image_name: "codefresh-io/cf-argo-plugin"
+    working_directory: "${{clone}}"
+    tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
+    dockerfile: "Dockerfile"
+    stage: "build"
+
+  push_with_tag:
+    stage: 'push'
+    type: push
+    title: Pushing to a registry
+    candidate: ${{build}}
+    tags:
+      - ${{CF_BRANCH_TAG_NORMALIZED}}
+    registry: dockerhub
+    image_name: codefresh/cf-argo-plugin
+
+  push_to_my_registry:
+    stage: 'push'
+    type: push
+    title: Pushing to a registry
+    candidate: ${{build}}
+    tags:
+      - ${{VERSION}}
+    registry: dockerhub
+    image_name: codefresh/cf-argo-plugin
+    when:
+      branch:
+        only:
+          - master
+
+

@@ -29,7 +29,7 @@ type Builder interface {
 	Auth(host string, username string, password string) error
 	Sync(args *SyncArgs, name string, authToken string, host string, context string)
 	ExportExternalUrl(host string, name string)
-	Rollout(args *RolloutArgs, name string, authToken string, host string)
+	Rollout(args *RolloutArgs, name string, authToken string, host string, context string)
 
 	GetLines() []string
 	GetExportLines() []string
@@ -105,12 +105,19 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 	}
 }
 
-func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host string) {
+func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host string, context string) {
 	hostDomain, _ := getHostDomain(host)
 	b.lines = append(b.lines, "kubectl config get-contexts")
 	b.lines = append(b.lines, fmt.Sprintf("kubectl config use-context \"%s\"", args.KubernetesContext))
 	b.lines = append(b.lines, fmt.Sprintf("kubectl argo rollouts promote \"%s\" -n \"%s\"", args.RolloutName, args.RolloutNamespace))
 	if args.WaitHealthy {
+		if context != "" {
+			cmd := fmt.Sprintf(`
+		cf-argo-plugin wait-rollout %s --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=%s --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
+        sleep 5s
+        `, name, context)
+			b.lines = append(b.lines, cmd)
+		}
 		tokenFlags := buildTokenFlags(authToken, *hostDomain, false)
 		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s %s", name, args.WaitAdditionalFlags, tokenFlags))
 	}

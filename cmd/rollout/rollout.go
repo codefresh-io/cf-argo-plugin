@@ -36,7 +36,7 @@ var Cmd = &cobra.Command{
 			}
 		}
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
-		b.Rollout(rolloutArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host)
+		b.Rollout(rolloutArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration)
 
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
