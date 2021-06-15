@@ -20,6 +20,9 @@ var WaitRolloutCmd = &cobra.Command{
 	Use:   "wait-rollout [app]",
 	Short: "Wait rollout",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		retriesCount := 0
+
 		name := args[0]
 
 		fmt.Println("Start execute wait for rollout " + name)
@@ -70,10 +73,12 @@ var WaitRolloutCmd = &cobra.Command{
 			time.Sleep(10 * time.Second)
 
 			elapsed := time.Now().Sub(start)
-			if elapsed.Minutes() >= 15 {
+			if elapsed.Minutes() >= 15 || retriesCount >= 5 {
 				fmt.Println("Stop wait for rollout because retries time exceed")
 				return nil
 			}
+
+			retriesCount++
 		}
 	},
 }
