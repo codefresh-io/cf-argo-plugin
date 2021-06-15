@@ -37,11 +37,9 @@ var WaitRolloutCmd = &cobra.Command{
 		})
 
 		historyId, _ := argoApi.GetLatestHistoryId(name)
-		//fmt.Println(fmt.Sprintf("Current history id %v", historyId))
 		start := time.Now()
 		for {
 			currentHistoryId, _ := argoApi.GetLatestHistoryId(name)
-			//fmt.Println(fmt.Sprintf("Current in loop history id %v", currentHistoryId))
 			// we identify new rollout
 			if currentHistoryId > historyId {
 				fmt.Println(fmt.Sprintf("Found new history id %v", currentHistoryId))
@@ -65,17 +63,15 @@ var WaitRolloutCmd = &cobra.Command{
 						bash.CommandExecutor{}.ExportGitopsInfo(activity)
 					}
 				} else {
-					fmt.Println(fmt.Sprintf("Cant export gitops info, because didnt find related activities"))
+					fmt.Println(fmt.Sprintf("Failed to export gitops info, because didnt find activity with history id %v, retrying", currentHistoryId))
 				}
-
-				return nil
 			}
 
 			time.Sleep(10 * time.Second)
 
 			elapsed := time.Now().Sub(start)
-			if elapsed.Minutes() >= 15 {
-				fmt.Println("Stop wait rollout because timeout")
+			if elapsed.Minutes() >= 2 {
+				fmt.Println("Stop wait for rollout because retries time exceed")
 				return nil
 			}
 		}
