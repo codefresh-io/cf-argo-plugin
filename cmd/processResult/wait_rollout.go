@@ -70,7 +70,7 @@ var WaitRolloutCmd = &cobra.Command{
 			time.Sleep(10 * time.Second)
 
 			elapsed := time.Now().Sub(start)
-			if elapsed.Minutes() >= 2 {
+			if elapsed.Minutes() >= 15 {
 				fmt.Println("Stop wait for rollout because retries time exceed")
 				return nil
 			}
