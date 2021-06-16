@@ -69,6 +69,8 @@ var WaitRolloutCmd = &cobra.Command{
 				} else {
 					fmt.Println(fmt.Sprintf("Failed to export gitops info, because didnt find activity with history id %v, retrying", currentHistoryId))
 				}
+
+				retriesCount++
 			}
 
 			time.Sleep(10 * time.Second)
@@ -78,8 +80,6 @@ var WaitRolloutCmd = &cobra.Command{
 				fmt.Println("Stop wait for rollout because retries time exceed")
 				return nil
 			}
-
-			retriesCount++
 		}
 	},
 }
