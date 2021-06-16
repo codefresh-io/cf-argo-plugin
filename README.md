@@ -1,0 +1,1 @@
+[![codecov](https://codecov.io/gh/codefresh-io/cf-argo-plugin/branch/master/graph/badge.svg?token=DFIBSE8YTB)](https://codecov.io/gh/codefresh-io/cf-argo-plugin)
