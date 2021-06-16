@@ -34,6 +34,7 @@ steps:
     stage: prepare
     title: "Fetch envs"
     image: alpine
+    working_directory: "${{main_clone}}"
     commands:
       - cf_export VERSION=$(cat $CF_REPO_NAME/VERSION)
   build:
