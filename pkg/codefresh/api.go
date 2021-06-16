@@ -13,7 +13,6 @@ type Codefresh interface {
 	SendMetadata(metadata *ArgoApplicationMetadata) (error, []UpdatedActivity)
 	RollbackToStable(name string, payload Rollback) (*TaskResult, error)
 	GetEnvironments() ([]CFEnvironment, error)
-	requestAPI(*requestOptions, interface{}) error
 }
 
 type CodefreshError struct {
