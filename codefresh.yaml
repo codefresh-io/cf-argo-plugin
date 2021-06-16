@@ -22,11 +22,6 @@ steps:
     commands:
       - go get -u github.com/mcubik/goverreport
       - go test ./... -coverpkg=./... -race -coverprofile=coverage.out -covermode=atomic
-    when:
-      steps:
-        - name: main_clone
-          on:
-            - success
 
   codecov-report:
     stage: "prepare"
