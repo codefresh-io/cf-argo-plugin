@@ -56,7 +56,6 @@ func init() {
 	rootCmd.AddCommand(sync.Cmd)
 	rootCmd.AddCommand(rollout.Cmd)
 	rootCmd.AddCommand(processResult.WaitRolloutCmd)
-	rootCmd.AddCommand(processResult.Cmd)
 	rootCmd.AddCommand(rollback.Cmd)
 
 }
