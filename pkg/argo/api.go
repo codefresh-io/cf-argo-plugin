@@ -15,11 +15,31 @@ func buildHttpClient() *http.Client {
 	return &http.Client{Transport: tr}
 }
 
-type Argo struct {
+type argo struct {
 	Host     string
 	Username string
 	Password string
 	Token    string
+}
+
+type Argo interface {
+	GetLatestHistoryId(application string) (int64, error)
+}
+
+type ClientOptions struct {
+	Host     string
+	Username string
+	Password string
+	Token    string
+}
+
+func New(options *ClientOptions) Argo {
+	return &argo{
+		Host:     options.Host,
+		Username: options.Username,
+		Password: options.Password,
+		Token:    options.Token,
+	}
 }
 
 type requestOptions struct {
@@ -35,7 +55,7 @@ type History struct {
 	} `json:"status"`
 }
 
-func (c *Argo) GetLatestHistoryId(application string) (int64, error) {
+func (c *argo) GetLatestHistoryId(application string) (int64, error) {
 
 	options := &requestOptions{
 		path:   "/api/v1/applications/" + application,
@@ -53,7 +73,7 @@ func (c *Argo) GetLatestHistoryId(application string) (int64, error) {
 	return historyList[len(historyList)-1].Id, nil
 }
 
-func (c *Argo) getToken() string {
+func (c *argo) getToken() string {
 
 	client := buildHttpClient()
 
@@ -80,7 +100,7 @@ func (c *Argo) getToken() string {
 	return result["token"].(string)
 }
 
-func (c *Argo) requestAPI(opt *requestOptions, target interface{}) error {
+func (c *argo) requestAPI(opt *requestOptions, target interface{}) error {
 
 	token := c.Token
 	if token == "" {
