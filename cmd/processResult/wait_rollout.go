@@ -64,6 +64,7 @@ var WaitRolloutCmd = &cobra.Command{
 					if err == nil {
 						fmt.Println(fmt.Sprintf("Start export gitops information"))
 						bash.CommandExecutor{}.ExportGitopsInfo(activity)
+						return nil
 					}
 				} else {
 					fmt.Println(fmt.Sprintf("Failed to export gitops info, because didnt find activity with history id %v, retrying", currentHistoryId))
