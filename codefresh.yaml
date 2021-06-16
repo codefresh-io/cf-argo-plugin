@@ -28,6 +28,13 @@ steps:
           on:
             - success
 
+  codecov-report:
+    stage: "prepare"
+    title: Codecov report
+    type: codecov-reporter
+    arguments:
+      codecov_integration: cf-argo-plugin
+
   fetch_envs:
     stage: prepare
     title: "Fetch envs"
