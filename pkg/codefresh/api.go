@@ -170,7 +170,7 @@ func (c *codefresh) GetEnvironments() ([]CFEnvironment, error) {
 	var result MongoCFEnvWrapper
 	err := c.requestAPI(&requestOptions{
 		method: "GET",
-		path:   "/api/environments-v2?plain=true&isEnvironment=false",
+		path:   "/api/gitops/application?plain=true&isEnvironment=false",
 	}, &result)
 	if err != nil {
 		return nil, err
