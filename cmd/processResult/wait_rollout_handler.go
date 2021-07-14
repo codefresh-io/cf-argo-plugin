@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	RETRIES_COUNT = 5
+	RETRIES_COUNT = 3
 	TIMEOUT       = 15
 )
 
