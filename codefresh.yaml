@@ -65,7 +65,7 @@ PushingToRegistries_with_tag:
         image_name: codefreshplugins/cf-argo-plugin
 
 
-  PushingToRegistries:
+PushingToRegistries:
     title: Pushing to Registry
     type: push
     candidate: ${{build}}
