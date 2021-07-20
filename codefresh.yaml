@@ -62,7 +62,7 @@ PushingToRegistries_with_tag:
       PushingToQuayRegistry:
         title: Pushing To Quay Registry
         registry: cfpluginmgr-quay
-        image_name: codefreshplugins/cf-argo-plugin
+        image_name: quay.io/codefreshplugins/cf-argo-plugin
 
 
   PushingToRegistries:
@@ -83,7 +83,7 @@ PushingToRegistries_with_tag:
       PushingToQuayRegistry:
         title: Pushing To Quay Registry
         registry: cfpluginmgr-quay
-        image_name: codefreshplugins/cf-argo-plugin
+        image_name: quay.io/codefreshplugins/cf-argo-plugin
 
 
 
