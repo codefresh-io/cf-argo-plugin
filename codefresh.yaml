@@ -48,7 +48,7 @@ steps:
 
 
 
-PushingToRegistries:
+PushingToRegistries_with_tag:
     title: Pushing to Registry
     type: push
     candidate: ${{build}}
