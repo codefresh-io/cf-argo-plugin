@@ -45,28 +45,45 @@ steps:
     dockerfile: "Dockerfile"
     stage: "build"
 
-  push_with_tag:
-    stage: 'push'
+
+
+
+PushingToRegistries_with_tag:
+    title: Pushing to Registry
     type: push
-    title: Pushing to a registry
     candidate: ${{build}}
     tags:
       - ${{CF_BRANCH_TAG_NORMALIZED}}
-    registry: dockerhub
-    image_name: codefresh/cf-argo-plugin
+    scale:
+      PushingToDockerHubRegistry:
+        title: Pushing To DockerHub Registry
+        registry: dockerhub
+        image_name: codefresh/cf-argo-plugin
+      PushingToQuayRegistry:
+        title: Pushing To Quay Registry
+        registry: cfpluginmgr-quay
+        image_name: codefreshplugins/cf-argo-plugin
 
-  push_to_my_registry:
-    stage: 'push'
+
+  PushingToRegistries:
+    title: Pushing to Registry
     type: push
-    title: Pushing to a registry
     candidate: ${{build}}
     tags:
       - ${{VERSION}}
-    registry: dockerhub
-    image_name: codefresh/cf-argo-plugin
     when:
       branch:
         only:
           - master
+    scale:
+      PushingToDockerHubRegistry:
+        title: Pushing To DockerHub Registry
+        registry: dockerhub
+        image_name: codefresh/cf-argo-plugin
+      PushingToQuayRegistry:
+        title: Pushing To Quay Registry
+        registry: cfpluginmgr-quay
+        image_name: codefreshplugins/cf-argo-plugin
+
 
 
