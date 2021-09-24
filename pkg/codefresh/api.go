@@ -2,6 +2,7 @@ package codefresh
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -95,10 +96,13 @@ type codefresh struct {
 }
 
 func New(opt *ClientOptions) Codefresh {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	return &codefresh{
 		host:   opt.Host,
 		token:  opt.Token,
-		client: &http.Client{},
+		client: &http.Client{Transport: tr},
 	}
 }
 
