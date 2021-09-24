@@ -76,11 +76,11 @@ steps:
         only:
           - master
     scale:
-      PushingToDockerHubRegistry:
+      PushingToDockerHubRegistry2:
         title: Pushing To DockerHub Registry
         registry: dockerhub
         image_name: codefresh/cf-argo-plugin
-      PushingToQuayRegistry:
+      PushingToQuayRegistry2:
         title: Pushing To Quay Registry
         registry: cfpluginmgr-quay
         image_name: codefreshplugins/cf-argo-plugin
