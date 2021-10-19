@@ -63,7 +63,7 @@ func TestRolloutWithWaitHealthy(t *testing.T) {
 		"kubectl config use-context \"kube-ctx\"",
 		"kubectl argo rollouts promote \"app\" -n \"default\"",
 		`
-		cf-argo-plugin wait-rollout test --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
+		cf-argo-plugin wait-rollout test --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
         sleep 5s
 		`,
 		"argocd app wait test   --auth-token token --server  --insecure",
@@ -111,7 +111,7 @@ func TestSyncWithWaitHealthy(t *testing.T) {
 	expectedLines := []string{
 		"#!/bin/bash -e",
 		`
-		cf-argo-plugin wait-rollout test --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id=$CF_PIPELINE_NAME --build-id=$CF_BUILD_ID &
+		cf-argo-plugin wait-rollout test --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
         sleep 5s
 		`,
 		"argocd app sync test  --auth-token token --server  --insecure",
