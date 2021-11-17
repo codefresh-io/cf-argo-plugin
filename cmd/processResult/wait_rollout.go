@@ -8,6 +8,7 @@ import (
 var waitRolloutArgsOptions struct {
 	PipelineId string
 	BuildId    string
+	Skip       bool
 }
 
 var WaitRolloutCmd = &cobra.Command{
@@ -18,6 +19,9 @@ var WaitRolloutCmd = &cobra.Command{
 			fmt.Println("Wrong amount of arguments")
 			return nil
 		}
+		if waitRolloutArgsOptions.Skip {
+			return nil
+		}
 		return GetWaitRolloutHandler().Handle(args[0])
 	},
 }
@@ -26,4 +30,5 @@ func init() {
 	f := WaitRolloutCmd.Flags()
 	f.StringVar(&waitRolloutArgsOptions.PipelineId, "pipeline-id", "", "Pipeline id where argo sync was executed")
 	f.StringVar(&waitRolloutArgsOptions.BuildId, "build-id", "", "Build id where argo sync was executed")
+	f.BoolVar(&waitRolloutArgsOptions.Skip, "skip", false, "Skip wait rollout step")
 }
