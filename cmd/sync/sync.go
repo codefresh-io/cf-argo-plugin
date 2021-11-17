@@ -27,7 +27,7 @@ var Cmd = &cobra.Command{
 		}
 
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
-		b.Sync(syncArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration)
+		b.Sync(syncArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration, syncArgs.SkipWaitRollout)
 
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
@@ -89,5 +89,5 @@ func init() {
 	f.StringVar(&syncArgs.AdditionalFlags, "additional-flags", "", "Specify additional flags , like --grpc-web , so on")
 	f.StringVar(&syncArgs.WaitAdditionalFlags, "wait-additional-flags", "", "Specify additional flags for wait command, like --timeout , so on")
 	f.StringVar(&syncArgs.Revision, "revision", "", "Sync to a specific revision. Preserves parameter overrides")
-
+	f.BoolVar(&syncArgs.SkipWaitRollout, "skip", false, "Skip wait rollout")
 }

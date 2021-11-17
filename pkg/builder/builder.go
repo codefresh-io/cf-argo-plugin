@@ -14,6 +14,7 @@ type SyncArgs struct {
 	AdditionalFlags     string
 	Revision            string
 	WaitAdditionalFlags string
+	SkipWaitRollout     bool
 }
 
 type RolloutArgs struct {
@@ -23,13 +24,14 @@ type RolloutArgs struct {
 	WaitHealthy         bool
 	WaitAdditionalFlags string
 	Debug               bool
+	SkipWaitRollout     bool
 }
 
 type Builder interface {
 	Auth(host string, username string, password string) error
-	Sync(args *SyncArgs, name string, authToken string, host string, context string)
+	Sync(args *SyncArgs, name string, authToken string, host string, context string, skip bool)
 	ExportExternalUrl(host string, name string)
-	Rollout(args *RolloutArgs, name string, authToken string, host string, context string)
+	Rollout(args *RolloutArgs, name string, authToken string, host string, context string, skip bool)
 
 	GetLines() []string
 	GetExportLines() []string
@@ -64,12 +66,12 @@ func buildTokenFlags(authToken string, host string, prune bool) string {
 	return cmd
 }
 
-func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string, context string) {
+func (b *builder) Sync(args *SyncArgs, name string, authToken string, host string, context string, skip bool) {
 	hostDomain, _ := getHostDomain(host)
 	tokenFlags := buildTokenFlags(authToken, *hostDomain, args.Prune)
 	tokenFlagsWithoutPrune := buildTokenFlags(authToken, *hostDomain, false)
 	if args.WaitHealthy || args.WaitForSuspend {
-		b.lines = append(b.lines, GetCommandsFactory().CreateWaitRolloutCMD(name, context))
+		b.lines = append(b.lines, GetCommandsFactory().CreateWaitRolloutCMD(name, context, skip))
 	}
 
 	if args.Sync {
@@ -101,7 +103,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 	}
 }
 
-func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host string, context string) {
+func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host string, context string, skip bool) {
 	hostDomain, _ := getHostDomain(host)
 	b.lines = append(b.lines, "kubectl config get-contexts")
 	b.lines = append(b.lines, fmt.Sprintf("kubectl config use-context \"%s\"", args.KubernetesContext))
@@ -109,7 +111,7 @@ func (b *builder) Rollout(args *RolloutArgs, name string, authToken string, host
 
 	if args.WaitHealthy {
 		if context != "" {
-			b.lines = append(b.lines, GetCommandsFactory().CreateWaitRolloutCMD(name, context))
+			b.lines = append(b.lines, GetCommandsFactory().CreateWaitRolloutCMD(name, context, skip))
 		}
 		tokenFlags := buildTokenFlags(authToken, *hostDomain, false)
 		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s %s", name, args.WaitAdditionalFlags, tokenFlags))

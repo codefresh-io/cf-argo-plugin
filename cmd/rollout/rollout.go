@@ -36,7 +36,7 @@ var Cmd = &cobra.Command{
 			}
 		}
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
-		b.Rollout(rolloutArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration)
+		b.Rollout(rolloutArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration, rolloutArgs.SkipWaitRollout)
 
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
@@ -96,6 +96,7 @@ func init() {
 	f.BoolVar(&rolloutArgs.WaitHealthy, "wait-healthy", true, "Specify whether to wait for sync to be completed (in canary consider wait for suspended status)")
 	f.StringVar(&rolloutArgs.WaitAdditionalFlags, "wait-additional-flags", "", "Specify additional flags for wait command, like --timeout , so on")
 	f.BoolVar(&rolloutArgs.Debug, "debug", false, "Debug argocd command ( print commands to output )")
+	f.BoolVar(&rolloutArgs.SkipWaitRollout, "skip", false, "Skip wait rollout")
 
 	_ = cobra.MarkFlagRequired(f, "k8s-context")
 	_ = cobra.MarkFlagRequired(f, "rollout-name")

@@ -29,7 +29,7 @@ func TestRolloutWithoutWaitHealthy(t *testing.T) {
 		WaitHealthy:         false,
 		WaitAdditionalFlags: "",
 		Debug:               false,
-	}, "test", "token", "host", "context")
+	}, "test", "token", "host", "context", false)
 
 	expectedLines := []string{
 		"#!/bin/bash -e",
@@ -55,7 +55,7 @@ func TestRolloutWithWaitHealthy(t *testing.T) {
 		WaitHealthy:         true,
 		WaitAdditionalFlags: "",
 		Debug:               false,
-	}, "test", "token", "host", "context")
+	}, "test", "token", "host", "context", false)
 
 	expectedLines := []string{
 		"#!/bin/bash -e",
@@ -63,7 +63,7 @@ func TestRolloutWithWaitHealthy(t *testing.T) {
 		"kubectl config use-context \"kube-ctx\"",
 		"kubectl argo rollouts promote \"app\" -n \"default\"",
 		`
-		cf-argo-plugin wait-rollout test --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
+		cf-argo-plugin wait-rollout test  --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
         sleep 5s
 		`,
 		"argocd app wait test   --auth-token token --server  --insecure",
@@ -84,7 +84,7 @@ func TestSyncWithoutWaitHealthy(t *testing.T) {
 		WaitAdditionalFlags: "",
 		Debug:               false,
 		Sync:                true,
-	}, "test", "token", "host", "context")
+	}, "test", "token", "host", "context", false)
 
 	expectedLines := []string{
 		"#!/bin/bash -e",
@@ -106,12 +106,51 @@ func TestSyncWithWaitHealthy(t *testing.T) {
 		WaitAdditionalFlags: "",
 		Debug:               false,
 		Sync:                true,
-	}, "test", "token", "host", "context")
+	}, "test", "token", "host", "context", false)
 
 	expectedLines := []string{
 		"#!/bin/bash -e",
 		`
-		cf-argo-plugin wait-rollout test --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
+		cf-argo-plugin wait-rollout test  --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
+        sleep 5s
+		`,
+		"argocd app sync test  --auth-token token --server  --insecure",
+		`
+		{
+           set +e
+           argocd app wait test   --auth-token token --server  --insecure 2> /codefresh/volume/sync_error.log
+        }
+        if [[ $? -ne 0 ]]; then
+		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)
+		fi
+		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
+		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
+
+        wait
+        `,
+	}
+
+	lines := builder.GetLines()
+
+	if !reflect.DeepEqual(expectedLines, lines) {
+		t.Error("Sync commands is incorrect")
+	}
+
+}
+
+func TestSyncWithWaitHealthyAndSkip(t *testing.T) {
+	builder := New()
+	builder.Sync(&SyncArgs{
+		WaitHealthy:         true,
+		WaitAdditionalFlags: "",
+		Debug:               false,
+		Sync:                true,
+	}, "test", "token", "host", "context", true)
+
+	expectedLines := []string{
+		"#!/bin/bash -e",
+		`
+		cf-argo-plugin wait-rollout test --skip --cf-host=$CF_URL --cf-token=$CF_API_KEY --cf-integration=context --pipeline-id="$CF_PIPELINE_NAME" --build-id=$CF_BUILD_ID &
         sleep 5s
 		`,
 		"argocd app sync test  --auth-token token --server  --insecure",
