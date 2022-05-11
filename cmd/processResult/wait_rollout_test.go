@@ -37,7 +37,7 @@ func (a *MockArgo) GetLatestHistoryId(application string) (int64, error) {
 
 func TestHandleWaitRollout(t *testing.T) {
 	handler := &WaitRolloutHandler{codefresh: &MockCodefresh{}, argo: &MockArgo{}}
-	e := handler.processNewHistoryId(123, "test")
+	e := handler.processNewHistoryId(123, "test", "123")
 	if e == nil {
 		t.Error("Should fail with error")
 	}
