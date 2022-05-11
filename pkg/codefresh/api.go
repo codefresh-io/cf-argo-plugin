@@ -53,6 +53,7 @@ type ArgoApplicationMetadata struct {
 	BuildId         string `json:"buildId"`
 	HistoryId       int64  `json:"historyId"`
 	ApplicationName string `json:"name"`
+	Integration     string `json:"integration"`
 }
 
 type Rollback struct {

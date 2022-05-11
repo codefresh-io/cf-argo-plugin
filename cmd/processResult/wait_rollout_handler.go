@@ -33,7 +33,7 @@ func GetWaitRolloutHandler() *WaitRolloutHandler {
 	})}
 }
 
-func (waitRolloutHandler *WaitRolloutHandler) processNewHistoryId(historyId int64, name string) error {
+func (waitRolloutHandler *WaitRolloutHandler) processNewHistoryId(historyId int64, name string, integration string) error {
 	fmt.Println(fmt.Sprintf("Found new history id %v", historyId))
 
 	// wait before activity on codefresh will be created
@@ -45,6 +45,7 @@ func (waitRolloutHandler *WaitRolloutHandler) processNewHistoryId(historyId int6
 		BuildId:         waitRolloutArgsOptions.BuildId,
 		HistoryId:       historyId,
 		ApplicationName: name,
+		Integration:     integration,
 	})
 
 	if updatedActivities != nil {
@@ -73,7 +74,7 @@ func (waitRolloutHandler *WaitRolloutHandler) Handle(name string) error {
 		currentHistoryId, _ := waitRolloutHandler.argo.GetLatestHistoryId(name)
 		// we identify new rollout
 		if currentHistoryId > historyId {
-			err := waitRolloutHandler.processNewHistoryId(currentHistoryId, name)
+			err := waitRolloutHandler.processNewHistoryId(currentHistoryId, name, context.PluginCodefreshCredentials.Integration)
 			if err == nil {
 				return nil
 			}
