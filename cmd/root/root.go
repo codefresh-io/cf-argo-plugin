@@ -21,6 +21,8 @@ type authContext struct {
 	ArgoPassword string
 	ArgoHost     string
 	ArgoToken    string
+
+	BasicAuth bool
 }
 
 var pluginAuthContext = &authContext{}
@@ -49,6 +51,7 @@ func init() {
 	pf.StringVar(&pluginAuthContext.ArgoPassword, "argo-password", "", "Password for argo cd, use only if you not provide integration")
 	pf.StringVar(&pluginAuthContext.ArgoToken, "argo-token", "", "Token for argo cd, use only if you not provide integration")
 	pf.StringVar(&pluginAuthContext.ArgoHost, "argo-host", "", "Host for argo cd, use only if you not provide integration")
+	pf.BoolVar(&pluginAuthContext.BasicAuth, "basic-auth", false, "Use ArgoCD username/password as primary credentials")
 
 	pf.StringVar(&context.PluginOutConfig.CommandsFile, "out-commands-file", "", "Write main commands to file")
 	pf.StringVar(&context.PluginOutConfig.ExportOutUrlCommand, "out-export-file", "", "Write export commands to file")
@@ -84,6 +87,8 @@ func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
 		context.PluginArgoCredentials.Password = integration.Data.Password
 		context.PluginArgoCredentials.Token = integration.Data.Token
 	}
+
+	context.PluginArgoCredentials.BasicAuth = pluginAuthContext.BasicAuth
 
 	return nil
 }

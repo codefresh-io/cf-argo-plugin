@@ -19,7 +19,7 @@ var Cmd = &cobra.Command{
 		name := args[0]
 
 		b := builder.New()
-		if context.PluginArgoCredentials.Token == "" {
+		if context.PluginArgoCredentials.Token == "" || context.PluginArgoCredentials.BasicAuth {
 			err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password)
 			if err != nil {
 				return err
