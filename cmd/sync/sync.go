@@ -20,6 +20,7 @@ var Cmd = &cobra.Command{
 
 		b := builder.New()
 		if context.PluginArgoCredentials.Token == "" || context.PluginArgoCredentials.BasicAuth {
+			fmt.Println("Generate token use basic auth")
 			err := b.Auth(context.PluginArgoCredentials.Host, context.PluginArgoCredentials.Username, context.PluginArgoCredentials.Password)
 			if err != nil {
 				return err
