@@ -127,6 +127,9 @@ func TestSyncWithWaitHealthy(t *testing.T) {
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
+        if [[ -v ARGO_SYNC_FAILED ]]; then
+		  exit 1
+        fi
         `,
 	}
 
@@ -166,6 +169,9 @@ func TestSyncWithWaitHealthyAndSkip(t *testing.T) {
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
+        if [[ -v ARGO_SYNC_FAILED ]]; then
+		  exit 1
+        fi
         `,
 	}
 
