@@ -122,11 +122,15 @@ func TestSyncWithWaitHealthy(t *testing.T) {
         }
         if [[ $? -ne 0 ]]; then
 		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)
+		  ARGO_SYNC_FAILED=1
 		fi
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
+        if [[ -v ARGO_SYNC_FAILED ]]; then
+		  exit 1
+        fi
         `,
 	}
 
@@ -161,11 +165,15 @@ func TestSyncWithWaitHealthyAndSkip(t *testing.T) {
         }
         if [[ $? -ne 0 ]]; then
 		  ARGO_SYNC_ERROR=$(cat /codefresh/volume/sync_error.log | grep -i fatal)
+		  ARGO_SYNC_FAILED=1
 		fi
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
+        if [[ -v ARGO_SYNC_FAILED ]]; then
+		  exit 1
+        fi
         `,
 	}
 

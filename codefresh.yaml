@@ -20,15 +20,7 @@ steps:
     working_directory: ${{main_clone}}
     image: golang:1.14.2
     commands:
-      - go get -u github.com/mcubik/goverreport
       - go test ./... -coverpkg=./... -race -coverprofile=coverage.out -covermode=atomic
-
-  codecov-report:
-    stage: "prepare"
-    title: Codecov report
-    type: codecov-reporter
-    arguments:
-      codecov_integration: cf-argo-plugin
 
   fetch_envs:
     stage: prepare
