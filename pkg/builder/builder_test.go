@@ -106,6 +106,7 @@ func TestSyncWithWaitHealthy(t *testing.T) {
 		WaitAdditionalFlags: "",
 		Debug:               false,
 		Sync:                true,
+		Rollback:            true,
 	}, "test", "token", "host", "context", false)
 
 	expectedLines := []string{
@@ -128,9 +129,6 @@ func TestSyncWithWaitHealthy(t *testing.T) {
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
-        if [[ -v ARGO_SYNC_FAILED ]]; then
-		  exit 1
-        fi
         `,
 	}
 
@@ -171,10 +169,10 @@ func TestSyncWithWaitHealthyAndSkip(t *testing.T) {
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
-        if [[ -v ARGO_SYNC_FAILED ]]; then
-		  exit 1
-        fi
         `,
+		`        if [[ -v ARGO_SYNC_FAILED ]]; then
+		  exit 1
+        fi`,
 	}
 
 	lines := builder.GetLines()

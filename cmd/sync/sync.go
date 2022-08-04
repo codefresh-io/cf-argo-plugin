@@ -91,4 +91,5 @@ func init() {
 	f.StringVar(&syncArgs.WaitAdditionalFlags, "wait-additional-flags", "", "Specify additional flags for wait command, like --timeout , so on")
 	f.StringVar(&syncArgs.Revision, "revision", "", "Sync to a specific revision. Preserves parameter overrides")
 	f.BoolVar(&syncArgs.SkipWaitRollout, "skip", false, "Skip wait rollout")
+	f.BoolVar(&syncArgs.Rollback, "rollback", false, "Specify whether to wait for sync to run rollback after sync")
 }
