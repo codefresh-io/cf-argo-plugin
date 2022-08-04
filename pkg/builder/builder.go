@@ -7,6 +7,7 @@ import (
 
 type SyncArgs struct {
 	Sync                bool
+	Rollback            bool
 	WaitHealthy         bool
 	WaitForSuspend      bool
 	Debug               bool
@@ -96,11 +97,14 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 
         wait
-        if [[ -v ARGO_SYNC_FAILED ]]; then
-		  exit 1
-        fi
         `, name, args.WaitAdditionalFlags, tokenFlagsWithoutPrune)
 		b.lines = append(b.lines, cmd)
+	}
+	if args.WaitHealthy && args.Rollback != true {
+		failedSyncCmd := fmt.Sprintf(`        if [[ -v ARGO_SYNC_FAILED ]]; then
+		  exit 1
+        fi`)
+		b.lines = append(b.lines, failedSyncCmd)
 	}
 	if args.WaitForSuspend {
 		b.lines = append(b.lines, fmt.Sprintf("argocd app wait %s %s --suspended", name, tokenFlagsWithoutPrune))
