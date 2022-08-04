@@ -94,6 +94,7 @@ func (b *builder) Sync(args *SyncArgs, name string, authToken string, host strin
 		fi
 		echo ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
 		cf_export ARGO_SYNC_ERROR="$ARGO_SYNC_ERROR"
+
         wait
         if [[ -v ARGO_SYNC_FAILED ]]; then
 		  exit 1
