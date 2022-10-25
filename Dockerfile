@@ -10,7 +10,6 @@ COPY ./ ./
 RUN go build -o ./cf-argo-plugin
 
 FROM debian
-RUN apt update && apt upgrade
 RUN apt install curl
 RUN curl -L https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 -o /usr/local/bin/kubectl-argo-rollouts
 RUN chmod +x /usr/local/bin/kubectl-argo-rollouts
