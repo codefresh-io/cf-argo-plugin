@@ -25,7 +25,7 @@ steps:
   fetch_envs:
     stage: prepare
     title: "Fetch envs"
-    image: alpine
+    image: bullseye-slim
     commands:
       - cf_export VERSION=$(cat /codefresh/volume/$CF_REPO_NAME/VERSION)
   build:
