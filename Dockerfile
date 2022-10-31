@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ./ ./
 RUN go build -o ./cf-argo-plugin
 
-FROM debian
+FROM debian:bullseye-slim
 RUN apt update && apt upgrade
 RUN apt-get install curl -y
 RUN curl -L https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 -o /usr/local/bin/kubectl-argo-rollouts
