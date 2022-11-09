@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ./ ./
 RUN go build -o ./cf-argo-plugin
 
-FROM alpine
+FROM alpine:3.15
 RUN apk --update add curl bash
 RUN curl -L https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64 -o /usr/local/bin/kubectl-argo-rollouts
 RUN chmod +x /usr/local/bin/kubectl-argo-rollouts
