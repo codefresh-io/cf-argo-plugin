@@ -17,6 +17,7 @@ RUN apt-get update -y && apt-get install curl bash -y  \
     && chmod +x /usr/local/bin/kubectl \
     && curl -sSL https://github.com/argoproj/argo-cd/releases/download/v1.8.5/argocd-linux-amd64 -o /usr/local/bin/argocd \
     && chmod +x /usr/local/bin/argocd \
+    && apt-get install busybox -y && ln -s /bin/busybox /usr/bin/[[ \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
