@@ -15,7 +15,7 @@ RUN apt-get update -y && apt-get install curl bash -y  \
     && chmod +x /usr/local/bin/kubectl-argo-rollouts \
     && curl -L https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
-    && curl -sSL https://github.com/argoproj/argo-cd/releases/download/v1.8.5/argocd-linux-amd64 -o /usr/local/bin/argocd \
+    && curl -sSL https://github.com/argoproj/argo-cd/releases/download/v2.4.8/argocd-linux-amd64 -o /usr/local/bin/argocd \
     && chmod +x /usr/local/bin/argocd \
     && apt-get install busybox -y && ln -s /bin/busybox /usr/bin/[[ \
     && apt-get clean \
