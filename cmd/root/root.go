@@ -86,6 +86,9 @@ func fetchArgoCredentials(cmd *cobra.Command, args []string) error {
 		context.PluginArgoCredentials.Username = integration.Data.Username
 		context.PluginArgoCredentials.Password = integration.Data.Password
 		context.PluginArgoCredentials.Token = integration.Data.Token
+	} else if pluginAuthContext.ArgoToken != "" && pluginAuthContext.ArgoHost != "" {
+		context.PluginArgoCredentials.Token = pluginAuthContext.ArgoToken
+		context.PluginArgoCredentials.Host = pluginAuthContext.ArgoHost
 	}
 
 	context.PluginArgoCredentials.BasicAuth = pluginAuthContext.BasicAuth
