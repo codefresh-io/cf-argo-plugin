@@ -32,6 +32,7 @@ type Builder interface {
 	Auth(host string, username string, password string) error
 	Sync(args *SyncArgs, name string, authToken string, host string, context string, skip bool)
 	ExportExternalUrl(host string, name string)
+	ExportCustomExternalUrl(url string)
 	Rollout(args *RolloutArgs, name string, authToken string, host string, context string, skip bool)
 
 	GetLines() []string
@@ -137,6 +138,12 @@ func (b *builder) GetExportLines() []string {
 func (b *builder) ExportExternalUrl(host string, name string) {
 	applicationUrl := fmt.Sprintf("%s/applications/%s", host, name)
 	command := fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", applicationUrl)
+	b.lines = append(b.lines, command)
+	b.exportLines = append(b.exportLines, command)
+}
+
+func (b *builder) ExportCustomExternalUrl(url string) {
+	command := fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", url)
 	b.lines = append(b.lines, command)
 	b.exportLines = append(b.exportLines, command)
 }

@@ -27,7 +27,12 @@ var Cmd = &cobra.Command{
 			}
 		}
 
-		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
+		if context.PluginOutConfig.CustomOutputUrl == "" {
+			b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
+		} else {
+			b.ExportCustomExternalUrl(context.PluginOutConfig.CustomOutputUrl)
+		}
+
 		b.Sync(syncArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration, syncArgs.SkipWaitRollout)
 
 		resultCommands := strings.Join(b.GetLines()[:], "\n")

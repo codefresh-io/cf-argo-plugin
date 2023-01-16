@@ -11,6 +11,7 @@ type ArgoCredentials struct {
 type OutConfig struct {
 	CommandsFile        string
 	ExportOutUrlCommand string
+	CustomOutputUrl     string
 }
 
 var PluginArgoCredentials = &ArgoCredentials{}
