@@ -182,3 +182,18 @@ func TestSyncWithWaitHealthyAndSkip(t *testing.T) {
 	}
 
 }
+
+func TestBuildExportCustomExternalUrl(t *testing.T) {
+	builder := New()
+	builder.ExportCustomExternalUrl("http://google.com")
+	lines := builder.GetExportLines()
+
+	expectedLines := []string{
+		"#!/bin/bash -e",
+		"cf_export runArgoCd_CF_OUTPUT_URL=\"http://google.com\"",
+	}
+
+	if !reflect.DeepEqual(expectedLines, lines) {
+		t.Error("external url command is incorrect")
+	}
+}
