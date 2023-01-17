@@ -55,6 +55,7 @@ func init() {
 
 	pf.StringVar(&context.PluginOutConfig.CommandsFile, "out-commands-file", "", "Write main commands to file")
 	pf.StringVar(&context.PluginOutConfig.ExportOutUrlCommand, "out-export-file", "", "Write export commands to file")
+	pf.StringVar(&context.PluginOutConfig.CustomOutputUrl, "custom-external-link", "", "Custom link that Codefresh is showing inside build view")
 
 	rootCmd.AddCommand(sync.Cmd)
 	rootCmd.AddCommand(rollout.Cmd)
