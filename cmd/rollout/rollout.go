@@ -38,6 +38,10 @@ var Cmd = &cobra.Command{
 		b.ExportExternalUrl(context.PluginArgoCredentials.Host, name)
 		b.Rollout(rolloutArgs, name, context.PluginArgoCredentials.Token, context.PluginArgoCredentials.Host, context.PluginCodefreshCredentials.Integration, rolloutArgs.SkipWaitRollout)
 
+		if rolloutArgs.ExportRolloutStatus {
+			b.ExportRolloutStatus(rolloutArgs)
+		}
+
 		resultCommands := strings.Join(b.GetLines()[:], "\n")
 		resultExportCommands := strings.Join(b.GetExportLines()[:], "\n")
 
@@ -97,6 +101,7 @@ func init() {
 	f.StringVar(&rolloutArgs.WaitAdditionalFlags, "wait-additional-flags", "", "Specify additional flags for wait command, like --timeout , so on")
 	f.BoolVar(&rolloutArgs.Debug, "debug", false, "Debug argocd command ( print commands to output )")
 	f.BoolVar(&rolloutArgs.SkipWaitRollout, "skip", false, "Skip wait rollout")
+	f.BoolVar(&rolloutArgs.ExportRolloutStatus, "export-rollout-status", false, "Export rollout status")
 
 	_ = cobra.MarkFlagRequired(f, "k8s-context")
 	_ = cobra.MarkFlagRequired(f, "rollout-name")
