@@ -26,6 +26,7 @@ type RolloutArgs struct {
 	WaitAdditionalFlags string
 	Debug               bool
 	SkipWaitRollout     bool
+	ExportRolloutStatus bool
 }
 
 type Builder interface {
@@ -34,6 +35,7 @@ type Builder interface {
 	ExportExternalUrl(host string, name string)
 	ExportCustomExternalUrl(url string)
 	Rollout(args *RolloutArgs, name string, authToken string, host string, context string, skip bool)
+	ExportRolloutStatus(args *RolloutArgs)
 
 	GetLines() []string
 	GetExportLines() []string
@@ -146,6 +148,10 @@ func (b *builder) ExportCustomExternalUrl(url string) {
 	command := fmt.Sprintf("cf_export runArgoCd_CF_OUTPUT_URL=\"%s\"", url)
 	b.lines = append(b.lines, command)
 	b.exportLines = append(b.exportLines, command)
+}
+
+func (b *builder) ExportRolloutStatus(args *RolloutArgs) {
+	b.exportLines = append(b.lines, fmt.Sprintf("kubectl argo rollouts status \"%s\" -n \"%s\" | { read status; echo runArgoCd_CF_OUTPUT_URL=$status; }", args.RolloutName, args.RolloutNamespace))
 }
 
 func getHostDomain(host string) (*string, error) {
