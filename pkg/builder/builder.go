@@ -151,7 +151,7 @@ func (b *builder) ExportCustomExternalUrl(url string) {
 }
 
 func (b *builder) ExportRolloutStatus(args *RolloutArgs) {
-	b.exportLines = append(b.lines, fmt.Sprintf("kubectl argo rollouts status \"%s\" -n \"%s\" | { read status; echo rollout_status=$status; }", args.RolloutName, args.RolloutNamespace))
+	b.exportLines = append(b.lines, fmt.Sprintf("kubectl argo rollouts status \"%s\" -n \"%s\" | { read status; cf_export rollout_status=$status; }", args.RolloutName, args.RolloutNamespace))
 }
 
 func getHostDomain(host string) (*string, error) {
