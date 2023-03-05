@@ -151,7 +151,7 @@ func (b *builder) ExportCustomExternalUrl(url string) {
 }
 
 func (b *builder) ExportRolloutStatus(args *RolloutArgs) {
-	b.lines = append(b.lines, fmt.Sprintf("kubectl argo rollouts status \"%s\" -n \"%s\" | { read status; cf_export rollout_status=$status; }", args.RolloutName, args.RolloutNamespace))
+	b.lines = append(b.lines, fmt.Sprintf("kubectl config use-context \"%s\"", args.KubernetesContext))
 	b.exportLines = append(b.exportLines, fmt.Sprintf("kubectl argo rollouts status \"%s\" -n \"%s\" | { read status; cf_export rollout_status=$status; }", args.RolloutName, args.RolloutNamespace))
 }
 
