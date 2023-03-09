@@ -75,4 +75,4 @@ steps:
       PushingToQuayRegistry2:
         title: Pushing To Quay Registry
         registry: cfpluginmgr-quay
-        image_name: codefreshplugins/cf-argo-plugin
+        image_name: codefresh/cf-argo-plugin
