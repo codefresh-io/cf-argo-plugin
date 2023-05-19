@@ -9,13 +9,13 @@ WORKDIR /app
 COPY ./ ./
 RUN go build -o ./cf-argo-plugin
 
-FROM debian:bullseye-slim
-RUN apt-get update -y && apt-get install curl bash -y  \
-    && curl -L https://github.com/argoproj/argo-rollouts/releases/download/v1.4.0/kubectl-argo-rollouts-linux-amd64 -o /usr/local/bin/kubectl-argo-rollouts \
+FROM debian:11-slim
+RUN apt-get update -y && apt-get install wget bash -y  \
+    && wget -O /usr/local/bin/kubectl-argo-rollouts https://github.com/argoproj/argo-rollouts/releases/download/v1.5.0/kubectl-argo-rollouts-linux-amd64 \
     && chmod +x /usr/local/bin/kubectl-argo-rollouts \
-    && curl -L https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
+    && wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
-    && curl -sSL https://github.com/argoproj/argo-cd/releases/download/v2.5.6/argocd-linux-amd64 -o /usr/local/bin/argocd \
+    && wget -O /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.7.1/argocd-linux-amd64 \
     && chmod +x /usr/local/bin/argocd \
     && apt-get install busybox -y && ln -s /bin/busybox /usr/bin/[[ \
     && apt-get clean \
