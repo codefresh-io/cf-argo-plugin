@@ -37,9 +37,6 @@ steps:
     dockerfile: "Dockerfile"
     stage: "build"
 
-
-
-
   PushingToRegistries_with_tag:
     title: Pushing to Registry
     type: push
