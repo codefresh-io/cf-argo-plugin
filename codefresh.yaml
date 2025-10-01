@@ -36,6 +36,7 @@ steps:
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
     dockerfile: "Dockerfile"
     stage: "build"
+    registry: cf-quay
 
   PushingToRegistries_with_tag:
     title: Pushing to Registry
