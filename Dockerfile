@@ -15,7 +15,7 @@ RUN apt-get update -y && apt-get install wget bash -y  \
     && chmod +x /usr/local/bin/kubectl-argo-rollouts \
     && wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.17.4/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
-    && wget -O /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v3.1.8/argocd-linux-amd64 \
+    && wget -O /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v3.0.2/argocd-linux-amd64 \
     && chmod +x /usr/local/bin/argocd \
     && apt-get install busybox -y && ln -s /bin/busybox /usr/bin/[[ \
     && apt-get clean \
