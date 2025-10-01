@@ -31,7 +31,7 @@ steps:
   build:
     title: "Building Docker image"
     type: "build"
-    image_name: "codefresh-io/cf-argo-plugin"
+    image_name: "codefresh/cf-argo-plugin"
     working_directory: "${{main_clone}}"
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
     dockerfile: "Dockerfile"
